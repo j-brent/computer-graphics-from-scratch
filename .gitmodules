@@ -1,0 +1,3 @@
+[submodule "ext/bmpmini"]
+	path = ext/bmpmini
+	url = https://github.com/j-brent/bmpmini.git
