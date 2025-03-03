@@ -5,13 +5,17 @@ add_library(cgfs STATIC
     color.h
     extent.h
     index.h
+    light.h
     position.h
     scene.h
     scene.cpp
     sphere.h
 )
+target_include_directories(cgfs PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_library(cgfs::graphics ALIAS cgfs)
 
 add_executable(demo 
     demo.cpp
 )
-target_link_libraries(demo cgfs bmpmini)
+target_link_libraries(demo cgfs::graphics bmpmini)
