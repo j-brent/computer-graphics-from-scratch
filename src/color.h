@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 namespace cgfs
 {
     struct Color
@@ -9,10 +11,17 @@ namespace cgfs
         unsigned char b = 0;
     };
 
+    inline bool operator==(const Color& lhs, const Color& rhs)
+    {
+        return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b;
+    }
+
     inline Color operator*(float s, const Color& c)
     {
-        // TODO: is static_cast sufficient, or should we use std::clamp first?
-        return {static_cast<unsigned char>(s * c.r), static_cast<unsigned char>(s * c.g), static_cast<unsigned char>(s * c.b)};
+        const auto r = std::clamp(s * c.r, 0.f, 255.f);
+        const auto g = std::clamp(s * c.g, 0.f, 255.f); 
+        const auto b = std::clamp(s * c.b, 0.f, 255.f);
+        return {static_cast<unsigned char>(r), static_cast<unsigned char>(g), static_cast<unsigned char>(b)};
     }
 
     inline Color operator*(const Color& c, float s)

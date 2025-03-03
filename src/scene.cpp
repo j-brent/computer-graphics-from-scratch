@@ -54,6 +54,6 @@ namespace cgfs
     const auto P = O + closest_t * (D - O); // Compute intersection
     auto N = P - closest_sphere.center; // Compute sphere normal at intersection
     N = N / length(N);
-    return closest_sphere.color * compute_lighting(P, N, m_lights);
+    return closest_sphere.color * compute_lighting(P, N, O-D, closest_sphere.specular, m_lights);
   }
 }

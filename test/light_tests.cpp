@@ -7,7 +7,7 @@ TEST_CASE("Ambient light")
   SECTION("Given intensity")
   {
     cgfs::AmbientLight al{0.5};
-    REQUIRE(al.intensity({}, {}) == 0.5);
+    REQUIRE(al.intensity() == 0.5);
   }
 }
 

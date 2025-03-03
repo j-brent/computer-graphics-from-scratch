@@ -18,6 +18,26 @@ namespace cgfs
         float z = 0;
     };
 
+    inline bool operator==(const Position3D& lhs, const Position3D& rhs)
+    {
+        return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+    }
+
+    inline bool operator!=(const Position3D& lhs, const Position3D& rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    inline bool operator==(const Vector3D& lhs, const Vector3D& rhs)
+    {
+        return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+    }
+
+    inline bool operator!=(const Vector3D& lhs, const Vector3D& rhs)
+    {
+        return !(lhs == rhs);
+    }
+
     inline Vector3D operator-(const Vector3D& v)
     {
         return {-v.x, -v.y, -v.z};
