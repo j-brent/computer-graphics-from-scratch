@@ -48,9 +48,15 @@ int main()
 {
   const auto scene = cgfs::Scene{
     {
-      cgfs::Sphere{{0, -1, 3}, 1, cgfs::Palette1::Orange},
-      cgfs::Sphere{{2, 0, 4}, 1, cgfs::Palette1::Pink},
-      cgfs::Sphere{{-2, 0, 4}, 1, cgfs::Palette1::Purple}
+      cgfs::Sphere{{0, -1, 3}, 1, cgfs::Palette1::Orange, 500 /* shiny */},
+      cgfs::Sphere{{2, 0, 4}, 1, cgfs::Palette1::Pink, 500 /* shiny */},
+      cgfs::Sphere{{-2, 0, 4}, 1, cgfs::Palette1::Purple, 10 /* somewhat shiny */},
+      cgfs::Sphere{{0, -5001, 0}, 5000, cgfs::Palette1::Yellow, 1000 /* very shiny */}
+    },
+    {
+      cgfs::AmbientLight{0.2f},
+      cgfs::PointLight{0.6f, {2, 1, 0}},
+      cgfs::DirectionalLight{0.2f, {1, 4, 4}}
     }
   };
 

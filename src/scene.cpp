@@ -8,7 +8,6 @@ namespace cgfs
 {
   namespace
   {
-    // constexpr cgfs::Color BACKGROUND_COLOR = {56, 62, 66};
     constexpr cgfs::Color BACKGROUND_COLOR = Palette1::DarkGray;
 
     std::pair<float, float> intersect_ray_sphere(Position3D O, Vector3D D, const Sphere& sphere)
@@ -50,6 +49,10 @@ namespace cgfs
     {
       return BACKGROUND_COLOR;
     }
-    return closest_sphere.color;
+
+    const auto P = O + closest_t * (D - O); // Compute intersection
+    auto N = P - closest_sphere.center; // Compute sphere normal at intersection
+    N = N / length(N);
+    return closest_sphere.color * compute_lighting(P, N, O-D, closest_sphere.specular, m_lights);
   }
 }

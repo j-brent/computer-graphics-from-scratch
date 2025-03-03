@@ -10,11 +10,20 @@ namespace cgfs
         Position3D center = {0, 0, 0};
         float radius = 0;
         Color color = {0, 0, 0};
+        int specular = -1;
     };
 
     inline bool operator==(const Sphere& lhs, const Sphere& rhs)
     {
-        return lhs.center.x == rhs.center.x && lhs.center.y == rhs.center.y && lhs.center.z == rhs.center.z && lhs.radius == rhs.radius && lhs.color.r == rhs.color.r && lhs.color.g == rhs.color.g && lhs.color.b == rhs.color.b;
+        return lhs.center == rhs.center 
+            && lhs.radius == rhs.radius 
+            && lhs.color == rhs.color
+            && lhs.specular == rhs.specular;
+    }
+
+    inline bool operator!=(const Sphere& lhs, const Sphere& rhs)
+    {
+        return !(lhs == rhs);
     }
 
 } // namespace cgfs
