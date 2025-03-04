@@ -29,6 +29,14 @@ namespace cgfs
         return s*c;
     }
 
+    inline Color operator+(const Color& lhs, const Color& rhs)
+    {
+        const auto r = std::clamp(lhs.r + static_cast<float>(rhs.r), 0.f, 255.f);
+        const auto g = std::clamp(lhs.g + static_cast<float>(rhs.g), 0.f, 255.f); 
+        const auto b = std::clamp(lhs.b + static_cast<float>(rhs.b), 0.f, 255.f);
+        return {static_cast<unsigned char>(r), static_cast<unsigned char>(g), static_cast<unsigned char>(b)};
+    }
+
     static constexpr Color Red{255, 0, 0};
     static constexpr Color Green{0, 255, 0};
     static constexpr Color Blue{0, 0, 255};

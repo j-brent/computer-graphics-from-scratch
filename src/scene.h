@@ -18,7 +18,11 @@ namespace cgfs
         m_lights = std::move(lights);
       }
 
-      Color trace_ray(Position3D O, Position3D D, float t_min, float t_max) const;
+      /*
+      *   Trace a ray through the scene and return the color of the first object hit by the ray.
+      *   If no object is hit, return the background color.
+      */
+      Color trace_ray(const Ray3D& ray, size_t recursion_depth = 3) const;
 
     private:
       std::vector<Sphere> m_spheres;
