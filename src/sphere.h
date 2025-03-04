@@ -10,7 +10,8 @@ namespace cgfs
         Position3D center = {0, 0, 0};
         float radius = 0;
         Color color = {0, 0, 0};
-        int specular = -1;
+        int specular = -1;    // 0: not shiny at all, 1000: very shiny
+        float reflective = 0; // 0: not reflective at all, 1: a perfect mirror
     };
 
     static constexpr auto null_sphere = Sphere{};

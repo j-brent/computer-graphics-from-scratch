@@ -69,11 +69,17 @@ namespace cgfs
         return blocked(light) ? acc : acc + light.intensity(sp, V);
     });
   }
+
+  // Reflect the vector R around the normal N
+  inline Vector3D reflect(const Vector3D& R, const Vector3D& N)
+  {
+    return 2 * dot(R, N) * N - R;
+  }
 }
 
 namespace cgfs
 {
-  Color Scene::trace_ray(const Ray3D& ray) const
+  Color Scene::trace_ray(const Ray3D& ray, size_t recursion_depth) const
   {
     const auto [closest_sphere, closest_t] = closest_intersection(ray, m_spheres);
 
@@ -84,12 +90,22 @@ namespace cgfs
 
     const auto& O = ray.origin;
     const auto& D = ray.direction;
-
     const auto P = O + closest_t * D; // Compute intersection
     auto N = P - closest_sphere.center; // Compute sphere normal at intersection
     N = N / length(N);
 
     const auto sp = SurfacePoint{P, N, closest_sphere.specular};
-    return closest_sphere.color * compute_lighting(sp, -D, m_lights, m_spheres);
+    const auto local_color = closest_sphere.color * compute_lighting(sp, -D, m_lights, m_spheres);
+
+    const auto r = closest_sphere.reflective;
+    if (recursion_depth == 0 || r == 0)
+    {
+      return local_color;
+    }
+
+    const auto reflected_ray = Ray3D{sp.pos, reflect(-ray.direction, sp.normal), 0.001f, std::numeric_limits<float>::infinity()};
+    const auto reflected_color = trace_ray(reflected_ray, recursion_depth - 1);
+
+    return (1 - r) * local_color + r * reflected_color;
   }
 }

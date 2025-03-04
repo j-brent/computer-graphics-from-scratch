@@ -7,7 +7,7 @@ namespace cgfs
   struct Ray3D
   {
       Position3D origin = {0, 0, 0};
-      Vector3D direction= {0, 0, 0};
+      Vector3D direction = {0, 0, 0};
       float t_min = 0;
       float t_max = 1;
   };

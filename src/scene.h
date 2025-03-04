@@ -22,7 +22,7 @@ namespace cgfs
       *   Trace a ray through the scene and return the color of the first object hit by the ray.
       *   If no object is hit, return the background color.
       */
-      Color trace_ray(const Ray3D& ray) const;
+      Color trace_ray(const Ray3D& ray, size_t recursion_depth = 3) const;
 
     private:
       std::vector<Sphere> m_spheres;
