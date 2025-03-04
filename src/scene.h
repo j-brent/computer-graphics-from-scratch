@@ -18,7 +18,23 @@ namespace cgfs
         m_lights = std::move(lights);
       }
 
-      Color trace_ray(Position3D O, Position3D D, float t_min, float t_max) const;
+      /*
+      *   Trace a ray (O + tD) from the origin O in the direction D, and return the color of the first object hit by the ray.
+      *   If no object is hit, return the background color.
+      * 
+      *   O: the origin of the ray (the position of the camera)
+      *   D: the direction of the ray (the pixel position on the viewport, relative to the camera)
+      *   t_min: the minimum distance to consider for intersections
+      *   t_max: the maximum distance to consider for intersections
+      * 
+      *   Returns: the color of the first object hit by the ray, or the background color if no object is hit
+      * 
+      *   Note: t<0         behind the camera
+      *         t \in [0,1] between the camera and the projection plane/viewport
+      *         t>1         in front of the projection plane/viewport
+      */
+      // Color trace_ray(Position3D O, Vector3D D, float t_min, float t_max) const;
+      Color trace_ray(const Ray3D& ray) const;
 
     private:
       std::vector<Sphere> m_spheres;

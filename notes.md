@@ -3,8 +3,12 @@
 - https://www.gabrielgambetta.com/computer-graphics-from-scratch/
 
 
-## Light
+```sh
+git log --graph --oneline
+```
 
+
+## Light
 
 ### Abstract Base Class
 ```c++

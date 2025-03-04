@@ -1,6 +1,7 @@
 #pragma once
 
 #include "position.h"
+#include "ray.h"
 
 #include <memory>
 #include <numeric>
@@ -36,12 +37,19 @@ namespace cgfs
         {
             return m_light->intensity2(P, N, V, s);
         }
+
+        Ray3D back_ray(const Position3D& P) const
+        {
+            return m_light->back_ray(P);
+        }
+
     private:
         struct light_concept_t
         {
             virtual ~light_concept_t() = default;
             virtual std::unique_ptr<light_concept_t> clone() const = 0;
             virtual float intensity2(const Position3D& P, const Vector3D& N, const Vector3D& V, int s) const = 0;
+            virtual Ray3D back_ray(const Position3D& P) const = 0;
         };
 
         template <typename Owned>
@@ -60,6 +68,11 @@ namespace cgfs
             {
                 return o.intensity(P, N, V, s);
             }
+
+            Ray3D back_ray(const Position3D& P) const override
+            {
+                return o.back_ray(P);
+            }
         };
 
         std::unique_ptr<light_concept_t> m_light;
@@ -73,6 +86,11 @@ namespace cgfs
         float intensity(const Position3D& = {}, const Vector3D& = {}, const Vector3D& = {}, int = -1) const
         {
             return intensity_;
+        }
+
+        Ray3D back_ray(const Position3D& P) const
+        {
+            return null_ray3d;
         }
 
       private:
@@ -106,7 +124,13 @@ namespace cgfs
 
         float intensity(const Position3D& P, const Vector3D& N, const Vector3D& V = {}, int s = -1) const
         {
-            return detail::calculate_intensity(intensity_, position - P, N, V, s);
+            const auto L = position - P;
+            return detail::calculate_intensity(intensity_, L, N, V, s);
+        }
+
+        Ray3D back_ray(const Position3D& P) const
+        {
+            return {P, position - P, 0.0f,  1.0f};
         }
 
       private:
@@ -121,22 +145,18 @@ namespace cgfs
 
         float intensity(const Position3D& P = {}, const Vector3D& N = {}, const Vector3D& V = {}, int s = -1) const
         {
-            return detail::calculate_intensity(intensity_, direction, N, V, s);
+            const auto& L = direction;
+            return detail::calculate_intensity(intensity_, L, N, V, s);
         }
+
+        Ray3D back_ray(const Position3D& P) const
+        {
+            return {P, direction, 0.0f, std::numeric_limits<float>::infinity()};
+        }
+
       private:
         Vector3D direction;
         float intensity_;
     };
-
-    // P point on the surface
-    // N normal at P
-    // V is the "view vector" (the direction from the point P to the camera)
-    // s is the specular component
-    inline float compute_lighting(const Position3D& P, const Vector3D& N, const Vector3D& V, int s, const std::vector<Light>& lights)
-    {
-        return std::accumulate(lights.begin(), lights.end(), 0.0f, [&](float acc, const Light& light) {
-            return acc + light.intensity(P, N, V, s);
-        });
-    }
     
 } // namespace cgfs
