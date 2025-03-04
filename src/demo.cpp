@@ -36,8 +36,7 @@ namespace
         const auto V_xyz = canvas_to_viewport({x, y}, canvas.extent(), viewport);
 
         // 3. Determine the color seen through that square
-        const auto ray = Ray3D{O, V_xyz - O, 1, std::numeric_limits<float>::infinity()};
-        const auto color = scene.trace_ray(ray);
+        const auto color = scene.trace_ray({O, V_xyz - O, 1, std::numeric_limits<float>::infinity()});
 
         // 4. Paint the pixel that color
         canvas.putPixel({x, y}, color);

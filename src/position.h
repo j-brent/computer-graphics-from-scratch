@@ -89,4 +89,22 @@ namespace cgfs
         return {a.x + b.x, a.y + b.y, a.z + b.z};
     }
 
+    class UnitVector3D
+    {
+        public:
+            UnitVector3D(Vector3D v) : v_{normalize(v)} {}
+
+            operator Vector3D() const { return v_; }
+
+        private:
+            Vector3D v_;
+    };
+
+    struct SurfacePoint
+    {
+      Position3D pos = {};
+      UnitVector3D normal = {{0, 0, 0}};
+      int specularity = -1;
+    };
+
 } // namespace cgfs

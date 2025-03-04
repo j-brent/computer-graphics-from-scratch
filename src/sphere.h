@@ -13,6 +13,8 @@ namespace cgfs
         int specular = -1;
     };
 
+    static constexpr auto null_sphere = Sphere{};
+
     inline bool operator==(const Sphere& lhs, const Sphere& rhs)
     {
         return lhs.center == rhs.center 

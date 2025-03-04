@@ -33,9 +33,9 @@ namespace cgfs
 
         ~Light() = default;
 
-        float intensity(const Position3D& P, const Vector3D& N, const Vector3D& V = {}, int s = -1) const
+        float intensity(const SurfacePoint& sp, const Vector3D& V = {}) const
         {
-            return m_light->intensity2(P, N, V, s);
+            return m_light->intensity2(sp, V);
         }
 
         Ray3D back_ray(const Position3D& P) const
@@ -48,7 +48,7 @@ namespace cgfs
         {
             virtual ~light_concept_t() = default;
             virtual std::unique_ptr<light_concept_t> clone() const = 0;
-            virtual float intensity2(const Position3D& P, const Vector3D& N, const Vector3D& V, int s) const = 0;
+            virtual float intensity2(const SurfacePoint& sp, const Vector3D& V) const = 0;
             virtual Ray3D back_ray(const Position3D& P) const = 0;
         };
 
@@ -64,9 +64,9 @@ namespace cgfs
                 return std::make_unique<owner_t>(*this);
             }
 
-            float intensity2(const Position3D& P, const Vector3D& N, const Vector3D& V, int s) const override
+            float intensity2(const SurfacePoint& sp, const Vector3D& V) const override
             {
-                return o.intensity(P, N, V, s);
+                return o.intensity(sp, V);
             }
 
             Ray3D back_ray(const Position3D& P) const override
@@ -83,7 +83,7 @@ namespace cgfs
       public:
         AmbientLight(float intensity) : intensity_{intensity} {}
 
-        float intensity(const Position3D& = {}, const Vector3D& = {}, const Vector3D& = {}, int = -1) const
+        float intensity(const SurfacePoint& = {}, const Vector3D& = {}) const
         {
             return intensity_;
         }
@@ -100,7 +100,12 @@ namespace cgfs
 
     namespace detail
     {
-      inline float calculate_intensity(float intensity, const Vector3D& L, const Vector3D& N, const Vector3D& V, int s)
+      // intensity: intensity of the light source
+      // L: direction to the light source
+      // N: surface normal
+      // V: direction to the viewport
+      // s: surface specularity
+      inline float calculate_intensity(float intensity, const Vector3D& L, const Vector3D& N, int s = -1, const Vector3D& V= {})
       {
         float i = 0.f;
         const float dotLN = dot(L, N);
@@ -122,10 +127,9 @@ namespace cgfs
       public:
         PointLight(float intensity, Position3D pos) : position{pos}, intensity_{intensity} {}
 
-        float intensity(const Position3D& P, const Vector3D& N, const Vector3D& V = {}, int s = -1) const
+        float intensity(const SurfacePoint& sp, const Vector3D& V = {}) const
         {
-            const auto L = position - P;
-            return detail::calculate_intensity(intensity_, L, N, V, s);
+            return detail::calculate_intensity(intensity_, position - sp.pos, sp.normal, sp.specularity, V);
         }
 
         Ray3D back_ray(const Position3D& P) const
@@ -143,10 +147,9 @@ namespace cgfs
       public:
         DirectionalLight(float intensity, Vector3D dir) : direction{dir}, intensity_{intensity} {}
 
-        float intensity(const Position3D& P = {}, const Vector3D& N = {}, const Vector3D& V = {}, int s = -1) const
+        float intensity(const SurfacePoint& sp, const Vector3D& V = {}) const
         {
-            const auto& L = direction;
-            return detail::calculate_intensity(intensity_, L, N, V, s);
+            return detail::calculate_intensity(intensity_, direction, sp.normal, sp.specularity, V);
         }
 
         Ray3D back_ray(const Position3D& P) const
