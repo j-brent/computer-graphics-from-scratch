@@ -88,14 +88,9 @@ namespace cgfs
       return BACKGROUND_COLOR;
     }
 
-    const auto& O = ray.origin;
-    const auto& D = ray.direction;
-    const auto P = O + closest_t * D; // Compute intersection
-    auto N = P - closest_sphere.center; // Compute sphere normal at intersection
-    N = N / length(N);
-
-    const auto sp = SurfacePoint{P, N, closest_sphere.specular};
-    const auto local_color = closest_sphere.color * compute_lighting(sp, -D, m_lights, m_spheres);
+    const auto P = ray.origin + closest_t * ray.direction;
+    const auto sp = SurfacePoint{P, {P - closest_sphere.center}, closest_sphere.specular};
+    const auto local_color = closest_sphere.color * compute_lighting(sp, -ray.direction, m_lights, m_spheres);
 
     const auto r = closest_sphere.reflective;
     if (recursion_depth == 0 || r == 0)

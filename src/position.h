@@ -4,6 +4,12 @@
 
 namespace cgfs
 {
+    struct Position2D
+    {
+        float x = 0;
+        float y = 0;
+    };
+
     struct Position3D
     {
         float x = 0;

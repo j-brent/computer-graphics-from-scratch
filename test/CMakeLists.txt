@@ -9,7 +9,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 add_executable(cgfs-tests
-  light_tests.cpp
+  interpolation_tests.cpp
+  # light_tests.cpp
 )
 target_link_libraries(cgfs-tests 
   PUBLIC
