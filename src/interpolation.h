@@ -22,6 +22,19 @@ namespace cgfs
     return values;
   }
 
+  std::vector<float> interpolatef(int i0, float d0, int i1, float d1)
+  {
+    auto values = std::vector<float>{};
+    values.reserve(i1 - i0 + 1);
+
+    const auto a = (d1 - d0) / (i1 - i0);
+    auto d = d0;
+    for (int i = i0; i <= i1; ++i, d += a)
+      values.push_back(d);
+
+    return values;
+  }
+
   namespace detail
   {
       // Interpolate between two points a and b along the x-axis 
