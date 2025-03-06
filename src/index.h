@@ -13,4 +13,14 @@ namespace cgfs
         return {lhs.x - rhs.x, lhs.y - rhs.y};
     }
 
+    inline bool operator==(const Index2D& lhs, const Index2D& rhs)
+    {
+        return lhs.x == rhs.x && lhs.y == rhs.y;
+    }
+
+    inline bool operator!=(const Index2D& lhs, const Index2D& rhs)
+    {
+        return !(lhs == rhs);
+    }
+
 } // namespace cgfs
