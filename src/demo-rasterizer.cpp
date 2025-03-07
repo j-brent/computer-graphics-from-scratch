@@ -10,6 +10,8 @@
 #include "triangle.h"
 
 #include <array>
+#include <ranges>
+#include <vector>
 
 namespace cgfs
 {
@@ -122,18 +124,26 @@ namespace cgfs
       return viewport_to_canvas(V_xy, V_wh, C_wh);
     }
 
-    void render_triangle(Canvas& canvas, const Mesh::TFace& triangle, const std::vector<Index2D>& projected)
+    void render_triangle(Canvas& canvas, const Mesh::TFace& triangle, std::ranges::random_access_range auto&& projected)
+    requires std::same_as<std::ranges::range_value_t<decltype(projected)>, Index2D>
     {
-      draw_wireframe_triangle(canvas, projected.at(triangle.a), projected.at(triangle.b), projected.at(triangle.c), triangle.col);
+      draw_wireframe_triangle(canvas, projected[triangle.a], projected[triangle.b], projected[triangle.c], triangle.col);
     }
 
     void render_object(Canvas& canvas, const Mesh& object, const Extent2D& V_wh, float d)
     {
-      std::vector<Index2D> projected;
-      std::transform(object.vertices.begin(), object.vertices.end(), std::back_inserter(projected), [&](const Position3D& v){ return project_vertex(v, d, V_wh, canvas.extent());});
+      const auto project = [&](const Position3D& v){ return project_vertex(v, d, V_wh, canvas.extent());};
 
       for (const auto& t : object.faces)
-        render_triangle(canvas, t, projected);
+        render_triangle(canvas, t, object.vertices | std::views::transform(project));
+    }
+
+    void render_instance(Canvas& canvas, auto&& instance, const Extent2D& V_wh, float d)
+    {
+      const auto project = [&](const Position3D& v){ return project_vertex(v, d, V_wh, canvas.extent());};
+
+      for (const auto& t : instance.faces())
+        render_triangle(canvas, t, instance.vertices() | std::views::transform(project));
     }
 
   } // namespace
@@ -204,10 +214,11 @@ int main()
   };
   for (const auto& [a, b] : front_to_back_edges)
     cgfs::draw_line(canvas, a, b, cgfs::Green);
-}
+  }
 
 
   // Figure 10.2
+  if(false)
   {
     const auto T = cgfs::Vector3D{-1.5, 0, 7};
     // Vertices
@@ -236,9 +247,15 @@ int main()
       {2, 6, 7, cgfs::Cyan},
       {2, 7, 3, cgfs::Cyan},
     };
-    const auto cube = cgfs::Mesh{std::move(vertices), std::move(faces)};
 
+    const auto cube = cgfs::Mesh{std::move(vertices), std::move(faces)};
     cgfs::render_object(canvas, cube, viewport, d);
+  }
+
+  // Figure 10.3
+  {
+    cgfs::render_instance(canvas, cgfs::Cube{{-1.5f, 0.f, 7.f}}, viewport, d);
+    cgfs::render_instance(canvas, cgfs::Cube{{1.2f, 1.0f, 6.f}}, viewport, d);
   }
 
   save_as_bmp(canvas, "output-rasterizer.bmp");
