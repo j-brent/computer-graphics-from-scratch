@@ -4,6 +4,7 @@
 #include "extent.h"
 #include "index.h"
 #include "interpolation.h"
+#include "mesh.h"
 #include "position.h"
 #include "scene.h"
 #include "triangle.h"
@@ -121,6 +122,20 @@ namespace cgfs
       return viewport_to_canvas(V_xy, V_wh, C_wh);
     }
 
+    void render_triangle(Canvas& canvas, const Mesh::TFace& triangle, const std::vector<Index2D>& projected)
+    {
+      draw_wireframe_triangle(canvas, projected.at(triangle.a), projected.at(triangle.b), projected.at(triangle.c), triangle.col);
+    }
+
+    void render_object(Canvas& canvas, const Mesh& object, const Extent2D& V_wh, float d)
+    {
+      std::vector<Index2D> projected;
+      std::transform(object.vertices.begin(), object.vertices.end(), std::back_inserter(projected), [&](const Position3D& v){ return project_vertex(v, d, V_wh, canvas.extent());});
+
+      for (const auto& t : object.faces)
+        render_triangle(canvas, t, projected);
+    }
+
   } // namespace
 }
 
@@ -142,36 +157,38 @@ int main()
   // cgfs::Vertex2D v2{{20, 250}, cgfs::Palette1::Pink, 1.0f};
   // cgfs::draw_shaded_triangle(canvas, {v0, v1, v2});
 
-  const auto viewport = cgfs::Extent2D{10, 10};
+  const auto viewport = cgfs::Extent2D{1, 1};
   const float d = 1;
 
   // Figure 9.4
-  // The four "front" vertices
-  const auto vAf = cgfs::Position3D{-1-2, 1, 1};
-  const auto vBf = cgfs::Position3D{ 1-2, 1, 1};
-  const auto vCf = cgfs::Position3D{ 1-2, -1, 1};
-  const auto vDf = cgfs::Position3D{-1-2, -1, 1};
-  // The four "back" vertices
-  const auto vAb = cgfs::Position3D{-1-2, 1, 2};
-  const auto vBb = cgfs::Position3D{ 1-2, 1, 2};
-  const auto vCb = cgfs::Position3D{ 1-2, -1, 2};
-  const auto vDb = cgfs::Position3D{-1-2, -1, 2};
+  if (false)
+  {
+    // The four "front" vertices
+    const auto vAf = cgfs::Position3D{-1-2, 1, 1};
+    const auto vBf = cgfs::Position3D{ 1-2, 1, 1};
+    const auto vCf = cgfs::Position3D{ 1-2, -1, 1};
+    const auto vDf = cgfs::Position3D{-1-2, -1, 1};
+    // The four "back" vertices
+    const auto vAb = cgfs::Position3D{-1-2, 1, 2};
+    const auto vBb = cgfs::Position3D{ 1-2, 1, 2};
+    const auto vCb = cgfs::Position3D{ 1-2, -1, 2};
+    const auto vDb = cgfs::Position3D{-1-2, -1, 2};
+    
+    const auto project = [&](const cgfs::Position3D& v){
+      return cgfs::project_vertex(v, d, viewport, canvas.extent()); 
+    };
+    
+    const auto front_face = std::vector<std::pair<cgfs::Index2D, cgfs::Index2D>>{
+      {project(vAf), project(vBf)},
+      {project(vBf), project(vCf)},
+      {project(vCf), project(vDf)},
+      {project(vDf), project(vAf)},
+    };
+    for (const auto& [a, b] : front_face)
+      cgfs::draw_line(canvas, a, b, cgfs::Blue);
 
-  const auto project = [&](const cgfs::Position3D& v){
-    return cgfs::project_vertex(v, d, viewport, canvas.extent()); 
-  };
-
-  const auto front_face = std::vector<std::pair<cgfs::Index2D, cgfs::Index2D>>{
-    {project(vAf), project(vBf)},
-    {project(vBf), project(vCf)},
-    {project(vCf), project(vDf)},
-    {project(vDf), project(vAf)},
-  };
-  for (const auto& [a, b] : front_face)
-    cgfs::draw_line(canvas, a, b, cgfs::Blue);
-
-  const auto back_face = std::vector<std::pair<cgfs::Index2D, cgfs::Index2D>>{
-    {project(vAb), project(vBb)},
+    const auto back_face = std::vector<std::pair<cgfs::Index2D, cgfs::Index2D>>{
+      {project(vAb), project(vBb)},
     {project(vBb), project(vCb)},
     {project(vCb), project(vDb)},
     {project(vDb), project(vAb)},
@@ -187,6 +204,42 @@ int main()
   };
   for (const auto& [a, b] : front_to_back_edges)
     cgfs::draw_line(canvas, a, b, cgfs::Green);
+}
+
+
+  // Figure 10.2
+  {
+    const auto T = cgfs::Vector3D{-1.5, 0, 7};
+    // Vertices
+    auto vertices = std::vector<cgfs::Position3D> {
+      cgfs::Position3D{ 1, 1, 1} + T,
+      cgfs::Position3D{-1, 1, 1} + T,
+      cgfs::Position3D{-1, -1, 1} + T,
+      cgfs::Position3D{ 1, -1, 1} + T,
+      cgfs::Position3D{ 1, 1, -1} + T,
+      cgfs::Position3D{-1, 1, -1} + T,
+      cgfs::Position3D{-1, -1, -1} + T,
+      cgfs::Position3D{ 1, -1, -1} + T,
+    };
+    // Triangles
+    auto faces = std::vector<cgfs::Mesh::TFace>{
+      {0, 1, 2, cgfs::Red},
+      {0, 2, 3, cgfs::Red},
+      {4, 0, 3, cgfs::Green},
+      {4, 3, 7, cgfs::Green},
+      {5, 4, 7, cgfs::Blue},
+      {5, 7, 6, cgfs::Blue},
+      {1, 5, 6, cgfs::Yellow},
+      {1, 6, 2, cgfs::Yellow},
+      {4, 5, 1, cgfs::Purple},
+      {4, 1, 0, cgfs::Purple},
+      {2, 6, 7, cgfs::Cyan},
+      {2, 7, 3, cgfs::Cyan},
+    };
+    const auto cube = cgfs::Mesh{std::move(vertices), std::move(faces)};
+
+    cgfs::render_object(canvas, cube, viewport, d);
+  }
 
   save_as_bmp(canvas, "output-rasterizer.bmp");
   
