@@ -24,6 +24,11 @@ namespace cgfs
         float z = 0;
     };
 
+    inline Position2D operator*(float s, const Position2D& p)
+    {
+      return {s*p.x, s*p.y};
+    }
+
     inline bool operator==(const Position3D& lhs, const Position3D& rhs)
     {
         return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;

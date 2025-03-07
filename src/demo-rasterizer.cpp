@@ -14,6 +14,11 @@ namespace cgfs
 {
   namespace 
   {
+    int ftoi(float f)
+    {
+      return static_cast<int>(std::round(f));
+    }
+
     void draw_line(Canvas& canvas, const Index2D& a, const Index2D& b, const Color& color)
     {
       for (const auto& p : interpolate(a, b))
@@ -105,6 +110,17 @@ namespace cgfs
       }
     }
 
+    Index2D viewport_to_canvas(const Position2D& V_xy, const Extent2D& V_wh, const Extent2D& C_wh)
+    {
+      return {ftoi(V_xy.x * (C_wh.width/V_wh.width)), ftoi(V_xy.y * (C_wh.height/V_wh.height))};
+    }
+
+    Index2D project_vertex(const Position3D& v, float d, const Extent2D& V_wh, const Extent2D& C_wh)
+    {
+      const auto V_xy = (d / v.z) * Position2D{v.x, v.y};
+      return viewport_to_canvas(V_xy, V_wh, C_wh);
+    }
+
   } // namespace
 }
 
@@ -121,10 +137,56 @@ int main()
   // cgfs::draw_wireframe_triangle(canvas, {-200, -250}, {200, 50}, {20, 250}, cgfs::Palette1::Purple);
 
   // Figure 8.1
-  cgfs::Vertex2D v0{{-200, -250}, cgfs::Palette1::Pink, 0.5f};
-  cgfs::Vertex2D v1{{200, 50}, cgfs::Palette1::Pink, 0.0f};
-  cgfs::Vertex2D v2{{20, 250}, cgfs::Palette1::Pink, 1.0f};
-  cgfs::draw_shaded_triangle(canvas, {v0, v1, v2});
+  // cgfs::Vertex2D v0{{-200, -250}, cgfs::Palette1::Pink, 0.5f};
+  // cgfs::Vertex2D v1{{200, 50}, cgfs::Palette1::Pink, 0.0f};
+  // cgfs::Vertex2D v2{{20, 250}, cgfs::Palette1::Pink, 1.0f};
+  // cgfs::draw_shaded_triangle(canvas, {v0, v1, v2});
+
+  const auto viewport = cgfs::Extent2D{10, 10};
+  const float d = 1;
+
+  // Figure 9.4
+  // The four "front" vertices
+  const auto vAf = cgfs::Position3D{-1-2, 1, 1};
+  const auto vBf = cgfs::Position3D{ 1-2, 1, 1};
+  const auto vCf = cgfs::Position3D{ 1-2, -1, 1};
+  const auto vDf = cgfs::Position3D{-1-2, -1, 1};
+  // The four "back" vertices
+  const auto vAb = cgfs::Position3D{-1-2, 1, 2};
+  const auto vBb = cgfs::Position3D{ 1-2, 1, 2};
+  const auto vCb = cgfs::Position3D{ 1-2, -1, 2};
+  const auto vDb = cgfs::Position3D{-1-2, -1, 2};
+
+  const auto project = [&](const cgfs::Position3D& v){
+    return cgfs::project_vertex(v, d, viewport, canvas.extent()); 
+  };
+
+  const auto front_face = std::vector<std::pair<cgfs::Index2D, cgfs::Index2D>>{
+    {project(vAf), project(vBf)},
+    {project(vBf), project(vCf)},
+    {project(vCf), project(vDf)},
+    {project(vDf), project(vAf)},
+  };
+  for (const auto& [a, b] : front_face)
+    cgfs::draw_line(canvas, a, b, cgfs::Blue);
+
+  const auto back_face = std::vector<std::pair<cgfs::Index2D, cgfs::Index2D>>{
+    {project(vAb), project(vBb)},
+    {project(vBb), project(vCb)},
+    {project(vCb), project(vDb)},
+    {project(vDb), project(vAb)},
+  };
+  for (const auto& [a, b] : back_face)
+    cgfs::draw_line(canvas, a, b, cgfs::Red);
+
+  const auto front_to_back_edges = std::vector<std::pair<cgfs::Index2D, cgfs::Index2D>>{
+    {project(vAf), project(vAb)},
+    {project(vBf), project(vBb)},
+    {project(vCf), project(vCb)},
+    {project(vDf), project(vDb)},
+  };
+  for (const auto& [a, b] : front_to_back_edges)
+    cgfs::draw_line(canvas, a, b, cgfs::Green);
 
   save_as_bmp(canvas, "output-rasterizer.bmp");
   
