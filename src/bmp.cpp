@@ -1,8 +1,8 @@
 #include "bmp.h"
 
-#include "bmpmini/bmpmini.hpp"
-
 #include "canvas.h"
+
+#include "ext/bmpmini/bmpmini.hpp"
 
 #include <string_view>
 
