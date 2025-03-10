@@ -1,0 +1,20 @@
+add_executable(figure4-8 figure4-8.cpp)
+target_link_libraries(figure4-8 cgfs::graphics bmpmini)
+
+add_executable(figure6-5 figure6-5.cpp)
+target_link_libraries(figure6-5 cgfs::graphics bmpmini)
+
+add_executable(figure7-3 figure7-3.cpp)
+target_link_libraries(figure7-3 cgfs::graphics bmpmini)
+
+add_executable(figure8-1 figure8-1.cpp)
+target_link_libraries(figure8-1 cgfs::graphics bmpmini)
+
+add_executable(figure9-4 figure9-4.cpp)
+target_link_libraries(figure9-4 cgfs::graphics bmpmini)
+
+add_executable(figure10-2 figure10-2.cpp)
+target_link_libraries(figure10-2 cgfs::graphics bmpmini)
+
+add_executable(figure10-3 figure10-3.cpp)
+target_link_libraries(figure10-3 cgfs::graphics bmpmini)
