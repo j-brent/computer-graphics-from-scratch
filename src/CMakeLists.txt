@@ -1,4 +1,4 @@
-add_library(cgfs STATIC
+add_library(graphics STATIC
     bmp.h
     bmp.cpp
     canvas.h
@@ -14,8 +14,8 @@ add_library(cgfs STATIC
     sphere.h
     triangle.h
 )
-target_include_directories(cgfs PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(cgfs::graphics ALIAS graphics)
 
-add_library(cgfs::graphics ALIAS cgfs)
+target_include_directories(graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(cgfs PRIVATE bmpmini)
+target_link_libraries(graphics PRIVATE bmpmini)
