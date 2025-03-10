@@ -38,8 +38,11 @@ namespace cgfs
     }
 
     static constexpr Color Red{255, 0, 0};
+    static constexpr Color Yellow{255, 255, 0};
     static constexpr Color Green{0, 255, 0};
+    static constexpr Color Cyan{0, 255, 255};
     static constexpr Color Blue{0, 0, 255};
+    static constexpr Color Purple{255, 0, 255};
 
     struct Palette1
     {

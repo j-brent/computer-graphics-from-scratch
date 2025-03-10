@@ -1,5 +1,6 @@
-add_library(cgfs STATIC
+add_library(graphics STATIC
     bmp.h
+    bmp.cpp
     canvas.h
     canvas.cpp
     color.h
@@ -7,21 +8,14 @@ add_library(cgfs STATIC
     index.h
     light.h
     position.h
+    render.h
     scene.h
     scene.cpp
     sphere.h
     triangle.h
 )
-target_include_directories(cgfs PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(cgfs::graphics ALIAS graphics)
 
-add_library(cgfs::graphics ALIAS cgfs)
+target_include_directories(graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(demo 
-    demo.cpp
-)
-target_link_libraries(demo cgfs::graphics bmpmini)
-
-add_executable(demo-rasterizer
-    demo-rasterizer.cpp
-)
-target_link_libraries(demo-rasterizer cgfs::graphics bmpmini)
+target_link_libraries(graphics PRIVATE bmpmini)
