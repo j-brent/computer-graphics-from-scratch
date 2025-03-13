@@ -18,3 +18,6 @@ target_link_libraries(figure10-2 cgfs::graphics)
 
 add_executable(figure10-3 figure10-3.cpp)
 target_link_libraries(figure10-3 cgfs::graphics)
+
+add_executable(figure10-10 figure10-10.cpp)
+target_link_libraries(figure10-10 cgfs::graphics)

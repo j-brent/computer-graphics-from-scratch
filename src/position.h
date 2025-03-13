@@ -1,5 +1,9 @@
 #pragma once
 
+#include "sp3/point.h"
+#include "sp3/vector.h"
+#include "sp3/vector_point_functions.h"
+
 #include <cmath>
 
 namespace cgfs
@@ -9,6 +13,27 @@ namespace cgfs
         float x = 0;
         float y = 0;
     };
+
+    inline Position2D operator*(float s, const Position2D& p)
+    {
+      return {s*p.x, s*p.y};
+    }
+    
+#if 1
+    using Position3D = sp3::point;
+    using Vector3D = sp3::vector;
+
+    inline float length(const Vector3D& v)
+    {
+        return std::hypot(v.x, v.y, v.z);
+    }
+
+    inline Vector3D normalize(const Vector3D& v)
+    {
+        float len = length(v);
+        return {v.x / len, v.y / len, v.z / len};
+    }
+#else
 
     struct Position3D
     {
@@ -24,10 +49,6 @@ namespace cgfs
         float z = 0;
     };
 
-    inline Position2D operator*(float s, const Position2D& p)
-    {
-      return {s*p.x, s*p.y};
-    }
 
     inline bool operator==(const Position3D& lhs, const Position3D& rhs)
     {
@@ -99,7 +120,7 @@ namespace cgfs
     {
         return {a.x + b.x, a.y + b.y, a.z + b.z};
     }
-
+#endif
     class UnitVector3D
     {
         public:

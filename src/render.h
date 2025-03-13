@@ -162,7 +162,7 @@ namespace cgfs
 
   inline Index2D project_vertex(const Position3D& v, float d, const Extent2D& V_wh, const Extent2D& C_wh)
   {
-    const auto V_xy = (d / v.z) * Position2D{v.x, v.y};
+    const auto V_xy = (d / v.z) * Position2D{v.x, v.y}; // camera to viewport
     return viewport_to_canvas(V_xy, V_wh, C_wh);
   }
 

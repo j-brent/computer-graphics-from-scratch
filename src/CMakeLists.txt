@@ -1,11 +1,13 @@
 add_library(graphics STATIC
     bmp.h
     bmp.cpp
+    camera.h
     canvas.h
     canvas.cpp
     color.h
     extent.h
     index.h
+    instance.h
     light.h
     position.h
     render.h
@@ -18,4 +20,11 @@ add_library(cgfs::graphics ALIAS graphics)
 
 target_include_directories(graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(graphics PRIVATE bmpmini)
+find_package(three-space REQUIRED)
+
+target_link_libraries(graphics
+  PUBLIC
+    three-space::three-space
+  PRIVATE
+    bmpmini::bmpmini
+)
