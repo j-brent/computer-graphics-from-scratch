@@ -50,7 +50,7 @@ jobs:
         submodules: true
 
     - name: Give access to private repositories
-      run: git config --global url."https://j-brent:${{ secrets.GH_CI_FTS_PAT }}@github.com".insteadOf "https://github.com"
+      run: git config --global url."https://j-brent:${{ secrets.GH_CI_PAT }}@github.com".insteadOf "https://github.com"
     
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
