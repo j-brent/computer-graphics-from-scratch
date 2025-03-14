@@ -38,6 +38,7 @@ namespace cgfs
     }
 
     static constexpr Color Red{255, 0, 0};
+    static constexpr Color Orange{255, 102, 0};
     static constexpr Color Yellow{255, 255, 0};
     static constexpr Color Green{0, 255, 0};
     static constexpr Color Cyan{0, 255, 255};
