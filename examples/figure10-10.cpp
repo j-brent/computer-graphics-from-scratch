@@ -6,12 +6,20 @@
 #include "mesh.h"
 #include "render.h"
 
+#include "sp3/angle.h"
+#include "sp3/axes.h"
 #include "sp3/transform.h"
 
 #include <ranges>
 
 namespace
 {
+  struct Viewport
+  {
+    cgfs::Extent2D size = {1, 1};
+    float distance = 1;
+  };
+
   struct MeshScene
   {
     std::vector<cgfs::Instance> instances = {};
@@ -47,25 +55,22 @@ namespace
 
 
   // M is the transformation from model to camera coordinates
-  // p is the projection operator from camera to canvas coordinates
-  void render_model(cgfs::Canvas& canvas, auto&& model, const Projection& p, const sp3::transform& M)
+  void render_model(const cgfs::Mesh& model, cgfs::Canvas& canvas, const Viewport& vp, const sp3::transform& M)
   {
+    // p is the projection operator from camera to canvas coordinates
+    const auto p = Projection(canvas.extent(), vp.size, vp.distance);
     const auto project = [&](const cgfs::Position3D& v){ return p(M(v)); };
 
     for (const auto& t : model.faces)
       render_triangle(canvas, t, model.vertices | std::views::transform(project));
   }
 
-  void render_scene(const MeshScene& scene, cgfs::Canvas& canvas, const cgfs::Camera& camera, const Projection& proj)
+  void render_scene(const MeshScene& scene, cgfs::Canvas& canvas, const cgfs::Camera& camera, const Viewport& vp)
   {
-    const auto M_camera = cgfs::make_camera_matrix(camera);
+    const auto M_camera = cgfs::make_camera_matrix(camera.pose());
 
-    for (const auto I : scene.instances)
-    {
-      const auto M_model = I.transform; 
-      const auto M = M_camera * M_model;
-      render_model(canvas, I.model, proj, M);
-    } 
+    for (const auto& I : scene.instances)
+      render_model(I.model, canvas, vp, M_camera * I.transform);
   }
 }
 
@@ -75,17 +80,11 @@ int main()
     {cgfs::wireframe_cube(), sp3::transform{{-1.5f, 0.f, 7.f}, {}}},
     {cgfs::wireframe_cube(), sp3::transform{{1.2f, 1.0f, 6.f}, {}}},
   }};
-
   cgfs::Canvas canvas{{640, 640}};
+  const auto camera = cgfs::Camera{ {{0, -1, 0}, {sp3::xhat, sp3::angle{-sp3::pi/12}}}} ;
+  const auto viewport = Viewport{};
 
-  const auto viewport = cgfs::Extent2D{1, 1};
-  const float d = 1;
-
-  const auto camera = cgfs::Camera{{0, 0, 0}};
-
-  const auto projection = Projection(canvas.extent(), viewport, d);
-
-  render_scene(scene, canvas, camera, projection);
+  render_scene(scene, canvas, camera, viewport);
 
   save_as_bmp(canvas, "figure10-10.bmp");
 }

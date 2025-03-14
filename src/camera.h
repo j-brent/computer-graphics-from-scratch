@@ -19,10 +19,9 @@ namespace cgfs
     sp3::pose m_pose = {};
   };
 
-  inline sp3::transform make_camera_matrix(const Camera& camera)
+  inline sp3::transform make_camera_matrix(const sp3::pose& camera_pose)
   {
-    const auto& pose = camera.pose();
     const auto O = sp3::point{0, 0, 0};
-    return {O - pose.position, pose.orientation.inverse()};
+    return {O - camera_pose.position, camera_pose.orientation.inverse()};
   }
 }
