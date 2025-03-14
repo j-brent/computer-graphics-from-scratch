@@ -21,6 +21,33 @@ namespace cgfs
     std::vector<TFace> faces;
   };
 
+  inline Mesh wireframe_cube()
+  {
+    return {std::vector<Position3D> {
+      { 1, 1, 1},
+      {-1, 1, 1},
+      {-1, -1, 1},
+      { 1, -1, 1},
+      { 1, 1, -1},
+      {-1, 1, -1},
+      {-1, -1, -1},
+      { 1, -1, -1},
+    }, std::vector<Mesh::TFace>{
+      {0, 1, 2, cgfs::Red},
+      {0, 2, 3, cgfs::Red},
+      {4, 0, 3, cgfs::Green},
+      {4, 3, 7, cgfs::Green},
+      {5, 4, 7, cgfs::Blue},
+      {5, 7, 6, cgfs::Blue},
+      {1, 5, 6, cgfs::Yellow},
+      {1, 6, 2, cgfs::Yellow},
+      {4, 5, 1, cgfs::Purple},
+      {4, 1, 0, cgfs::Purple},
+      {2, 6, 7, cgfs::Cyan},
+      {2, 7, 3, cgfs::Cyan},
+    }};
+  }
+
   class Cube
   {
   public:
@@ -51,28 +78,6 @@ namespace cgfs
 
   private:
     Vector3D m_pos = {0, 0, 0};
-    Mesh m_mesh = {std::vector<Position3D> {
-      { 1, 1, 1},
-      {-1, 1, 1},
-      {-1, -1, 1},
-      { 1, -1, 1},
-      { 1, 1, -1},
-      {-1, 1, -1},
-      {-1, -1, -1},
-      { 1, -1, -1},
-    }, std::vector<Mesh::TFace>{
-      {0, 1, 2, cgfs::Red},
-      {0, 2, 3, cgfs::Red},
-      {4, 0, 3, cgfs::Green},
-      {4, 3, 7, cgfs::Green},
-      {5, 4, 7, cgfs::Blue},
-      {5, 7, 6, cgfs::Blue},
-      {1, 5, 6, cgfs::Yellow},
-      {1, 6, 2, cgfs::Yellow},
-      {4, 5, 1, cgfs::Purple},
-      {4, 1, 0, cgfs::Purple},
-      {2, 6, 7, cgfs::Cyan},
-      {2, 7, 3, cgfs::Cyan},
-    }};
+    Mesh m_mesh = wireframe_cube();
   };
 }

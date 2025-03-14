@@ -22,11 +22,12 @@ namespace cgfs
   {
   void Canvas::putPixel(Index2D xy, Color rgb)
   {
-    auto S_xy = to_screen(xy, m_extent);
+    const auto& [Sx, Sy] = to_screen(xy, m_extent);
+    
+    if ( Sx >= m_extent.width || Sy >= m_extent.height || Sx < 0 || Sy < 0) [[unlikely]]
+      return;
 
-    const auto& [x, y] = S_xy;
-    int index = (y * m_extent.width + x) * 3;
-    // std::cout << x << ", " << y <<  " -- " << index << std::endl;
+    int index = (Sy * m_extent.width + Sx) * 3;
     m_data[index] = rgb.r;
     m_data[index + 1] = rgb.g;
     m_data[index + 2] = rgb.b;
