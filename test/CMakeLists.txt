@@ -9,6 +9,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 add_executable(cgfs-tests
+  canvas_tests.cpp
   interpolation_tests.cpp
   # light_tests.cpp
 )

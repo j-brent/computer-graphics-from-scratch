@@ -15,7 +15,14 @@ CPMAddPackage("gh:j-brent/three-space#d04f940e2da32f06e8de0dd3ef80623fc313a600")
 add_subdirectory(ext)
 add_subdirectory(src)
 
+include(cmake/building_with_emscripten.cmake)
+
 if (PROJECT_IS_TOP_LEVEL)
-  add_subdirectory(test)
-  add_subdirectory(examples)
+  if(NOT CGFS_BUILDING_WITH_EMSCRIPTEN)
+    add_subdirectory(test)
+    add_subdirectory(examples)
+  else()
+    add_subdirectory(examples/browser)
+  endif()
 endif()
+
