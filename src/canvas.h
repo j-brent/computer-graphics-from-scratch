@@ -13,7 +13,7 @@ namespace cgfs
     {
     public:
 
-        static constexpr struct with_alpha_t {} with_alpha_channel;
+        static constexpr struct with_alpha_t {} with_alpha_channel{};
 
         explicit Canvas(Extent2D ext, Color bg = cgfs::Black)
         : m_extent{ext}
