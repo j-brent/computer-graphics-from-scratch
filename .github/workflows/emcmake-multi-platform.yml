@@ -70,5 +70,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: browser-examples-${{ matrix.os }}
-        path: ${{ steps.strings.outputs.build-output-dir }}
+        path: ${{ steps.strings.outputs.build-output-dir }}/examples/browser
         retention-days: 1
