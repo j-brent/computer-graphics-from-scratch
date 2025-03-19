@@ -27,7 +27,7 @@ namespace cgfs
     if ( Sx >= m_extent.width || Sy >= m_extent.height || Sx < 0 || Sy < 0) [[unlikely]]
       return;
 
-    int index = (Sy * m_extent.width + Sx) * 3;
+    int index = (Sy * m_extent.width + Sx) * m_pixel_size_bytes;
     m_data[index] = rgb.r;
     m_data[index + 1] = rgb.g;
     m_data[index + 2] = rgb.b;

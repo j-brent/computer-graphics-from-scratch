@@ -21,7 +21,6 @@ TEST_CASE("Horizontal-ish lines")
       REQUIRE(result_ba.size() == result.size());
       REQUIRE(std::equal(result_ba.begin(), result_ba.end(), result.begin()));
     }
-
   }
 
   SECTION("Given intensity")
@@ -31,7 +30,6 @@ TEST_CASE("Horizontal-ish lines")
     const auto result = cgfs::interpolate(a, b);
     REQUIRE(result.front() == a);
     REQUIRE(result.back() == b);
-    //
 
     SECTION("Order doesn't matter")
     {
@@ -62,7 +60,6 @@ TEST_CASE("Vertical-ish lines")
       REQUIRE(result_ba.size() == result.size());
       REQUIRE(std::equal(result_ba.begin(), result_ba.end(), result.begin()));
     }
-
   }
 
   SECTION("Given intensity")
