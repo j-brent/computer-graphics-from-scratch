@@ -66,8 +66,9 @@ jobs:
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Archive
+      if: ${{ matrix.build_type == 'Release' }}
       uses: actions/upload-artifact@v4
       with:
-        name: browser-examples
+        name: browser-examples-${{ matrix.os }}
         path: ${{ steps.strings.outputs.build-output-dir }}
         retention-days: 1
