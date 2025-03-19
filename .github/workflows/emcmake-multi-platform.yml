@@ -68,5 +68,9 @@ jobs:
     - name: Archive
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ steps.strings.outputs.build-output-dir }}
+        name: browser-examples
+        path: |
+          "${{ steps.strings.outputs.build-output-dir }}/examples/browser"
+          !"${{ steps.strings.outputs.build-output-dir }}/examples/browser/CMakeFiles"
+          !"${{ steps.strings.outputs.build-output-dir }}/examples/browser/cmake_install.cmake"
         retention-days: 1
