@@ -10,13 +10,13 @@
 #include "sp3/axes.h"
 #include "sp3/transform.h"
 
-#include <emscripten/val.h>
 #include <emscripten.h>
 
 #include <chrono>
 #include <format>
 #include <iostream>
 #include <ranges>
+#include <stdio.h>
 #include <thread>
 
 // https://gist.github.com/JoshuaSmyth/162ac4462325467fe8de2c4b7797187d
@@ -96,9 +96,7 @@ namespace
 
 int main()
 {
-  const auto now = std::chrono::system_clock::now();
-  const std::time_t t_c = std::chrono::system_clock::to_time_t(now);
-  std::cout << "Executable build time: " << std::ctime(&t_c);
+  std::cout << "Executable build time: " << __TIMESTAMP__ << std::endl;
 
   const auto theta = sp3::pi;
 
