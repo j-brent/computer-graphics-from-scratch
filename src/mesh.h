@@ -123,7 +123,7 @@ namespace cgfs
        0  b  a   -a  0  b   -b  a  0  (3, 5, 2)
        0  b  a    b  a  0    a  0  b  (3, 1, 6)
        0  b -a   -b  a  0   -a  0 -b  (0, 2, 9)
-       0  b -a    a  0 -b    b  a  0  (0, 9, 1)
+       0  b -a    a  0 -b    b  a  0  (0, 8, 1)
        0 -b -a   -a  0 -b   -b -a  0  (7, 9, 11)
        0 -b -a    b -a  0    a  0 -b  (7, 10, 8)
        0 -b  a   -b -a  0   -a  0  b  (4, 11, 5)
@@ -163,7 +163,7 @@ namespace cgfs
         {3, 5, 2, cgfs::Blue},
         {3, 1, 6, cgfs::Purple},
         {0, 2, 9, cgfs::Cyan},
-        {0, 9, 1, cgfs::Red},
+        {0, 8, 1, cgfs::Red},
         {7, 9, 11, cgfs::Orange},
         {7, 10, 8, cgfs::Yellow},
         {4, 11, 5, cgfs::Green},
