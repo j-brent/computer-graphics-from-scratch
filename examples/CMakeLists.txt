@@ -22,6 +22,9 @@ target_link_libraries(figure10-3 cgfs::graphics)
 add_executable(figure10-10 figure10-10.cpp)
 target_link_libraries(figure10-10 cgfs::graphics)
 
+add_executable(figure12-1 figure12-1.cpp)
+target_link_libraries(figure12-1 cgfs::graphics)
+
 add_executable(polyhedra polyhedra.cpp)
 target_link_libraries(polyhedra cgfs::graphics)
 

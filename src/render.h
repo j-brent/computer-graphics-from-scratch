@@ -172,6 +172,13 @@ namespace cgfs
     draw_wireframe_triangle(canvas, projected[triangle.a], projected[triangle.b], projected[triangle.c], triangle.col);
   }
 
+  inline void render_triangle_filled(Canvas& canvas, const Mesh::TFace& triangle, std::ranges::random_access_range auto&& projected)
+  requires std::same_as<std::ranges::range_value_t<decltype(projected)>, Index2D>
+  {
+    draw_filled_triangle(canvas, projected[triangle.a], projected[triangle.b], projected[triangle.c], triangle.col);
+  }
+
+
   inline void render_object(Canvas& canvas, const Mesh& object, const Extent2D& V_wh, float d)
   {
     const auto project = [&](const Position3D& v){ return project_vertex(v, d, V_wh, canvas.extent());};
