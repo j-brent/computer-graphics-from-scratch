@@ -59,10 +59,10 @@ namespace
   {
     // p is the projection operator from camera to canvas coordinates
     const auto p = Projection(canvas.extent(), vp.size, vp.distance);
-    const auto project = [&](const cgfs::Position3D& v) -> cgfs::Index2D { return p(M(v)); };
+    const auto xform = [&](const cgfs::Position3D& v) -> cgfs::Position3D { return M(v); };
 
     for (const auto& t : model.faces)
-      render_triangle_filled(canvas, t, model.vertices | std::views::transform(project));
+      render_triangle_filled_depth(canvas, t, model.vertices | std::views::transform(xform), p);
   }
 
   void render_scene(const MeshScene& scene, cgfs::Canvas& canvas, const cgfs::Camera& camera, const Viewport& vp)
@@ -86,5 +86,5 @@ int main()
 
   render_scene(scene, canvas, camera, viewport);
 
-  save_as_bmp(canvas, "figure12-1.bmp");
+  save_as_bmp(canvas, "figure12-4.bmp");
 }
