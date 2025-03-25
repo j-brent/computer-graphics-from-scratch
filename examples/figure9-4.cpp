@@ -26,7 +26,7 @@ int main()
   const auto vDb = cgfs::Position3D{-1-2, -1, 2};
     
   const auto project = [&](const cgfs::Position3D& v){
-    return cgfs::project_vertex(v, d, viewport, canvas.extent()); 
+    return cgfs::detail::project_vertex(v, d, viewport, canvas.extent()); 
   };
   
   const auto front_face = std::vector<std::pair<cgfs::Index2D, cgfs::Index2D>>{

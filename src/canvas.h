@@ -5,6 +5,7 @@
 #include "index.h"
 
 #include <algorithm>
+#include <limits>
 #include <vector>
 
 namespace cgfs
@@ -56,9 +57,11 @@ namespace cgfs
 
         // Set the pixel color at the specified coordinates.
         //
-        // Note that the coordinates (0, 0) are at the center of the canvas.
+        // Note that the coordinate (0, 0) is the center of the canvas.
         // Valid coordinates are in the range [-w/2, w/2] x [-h/2, h/2] where
         // w and h are the width and height of the camvas.
+        //
+        // Does nothing if the index is out of range
         void putPixel(Index2D xy, Color rgb);
 
         const Extent2D& extent() const { return m_extent; } 
@@ -67,10 +70,14 @@ namespace cgfs
 
         size_t num_bytes() const { return m_data.size() * sizeof(unsigned char); }
 
+        // Throws std::out_of_range if the index exceeds the canvas' extent
+        float& depthBuffer(Index2D xy);
+
     private:
         Extent2D m_extent;
         std::vector<unsigned char> m_data;
         int m_pixel_size_bytes = 3;
+        std::vector<float> m_depth_buffer = std::vector<float>(size_t(m_extent.width * m_extent.height), 0);
     };
 
 } // namespace cgfs
