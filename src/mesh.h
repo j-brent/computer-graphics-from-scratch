@@ -2,6 +2,9 @@
 
 #include "color.h"
 #include "position.h"
+#include "triangle.h"
+
+#include "sp3/transform.h"
 
 #include <ranges>
 #include <vector>
@@ -19,6 +22,29 @@ namespace cgfs
     };
     std::vector<Position3D> vertices;
     std::vector<TFace> faces;
+
+    // faces as triangles (Triangle3D) in model space
+    auto triangles() const
+    {
+      const auto to_triangle = [this](const TFace& t){
+        return Triangle3D{vertices[t.a], vertices[t.b], vertices[t.c], t.col};
+      };
+      return faces | std::ranges::views::transform(to_triangle);
+    }
+
+    // faces as triangles (Triangle3D) with xform applied to the vertices (whose coordinates are in model space)
+    auto triangles(sp3::transform xform) const
+    {
+      const auto to_triangle = [xform = std::move(xform), this](const TFace& t){
+        return Triangle3D{
+          xform(vertices[t.a]),
+          xform(vertices[t.b]),
+          xform(vertices[t.c]),
+          t.col
+        };
+      };
+      return faces | std::ranges::views::transform(to_triangle);
+    }
   };
 
   inline Mesh wireframe_cube()

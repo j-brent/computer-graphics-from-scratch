@@ -19,4 +19,12 @@ namespace cgfs
     Vertex2D b;
     Vertex2D c;
   };
+
+  struct Triangle3D
+  {
+    Position3D a;
+    Position3D b;
+    Position3D c;
+    Color col;
+  };
 }
