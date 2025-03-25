@@ -1,5 +1,6 @@
 #pragma once
 
+#include "camera.h"
 #include "canvas.h"
 #include "color.h"
 #include "draw.h"

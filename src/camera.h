@@ -14,7 +14,7 @@ namespace cgfs
     Camera() = default;
     ~Camera() = default;
 
-    explicit Camera(sp3::pose pose, Viewport vp)
+    explicit Camera(sp3::pose pose, Viewport vp = {})
     : m_pose{std::move(pose)}
     , m_viewport{std::move(vp)}
     {}
