@@ -76,10 +76,9 @@ namespace cgfs
     draw_filled_triangle(canvas, projected[triangle.a], projected[triangle.b], projected[triangle.c], triangle.col);
   }
 
-  inline void render_triangle_filled_depth(Canvas& canvas, const Mesh::TFace& triangle, std::ranges::random_access_range auto&& xformed, auto&& project)
-  requires std::same_as<std::ranges::range_value_t<decltype(xformed)>, Position3D>
+  inline void render_triangle_filled_depth(Canvas& canvas, const Triangle3D& t3d, auto&& project)
   {
-    draw_filled_triangle(canvas, triangle, xformed, project);
+    draw_filled_triangle(canvas, t3d, project);
   }
 
   inline void render_object(Canvas& canvas, const Mesh& object, const Extent2D& V_wh, float d)
@@ -103,10 +102,8 @@ namespace cgfs
   // M is the transformation from model to camera coordinates
   inline void render_model(cgfs::Canvas& canvas, const cgfs::Mesh& model, const cgfs::Projection& P, const sp3::transform& M)
   {
-    const auto xform = [&](const cgfs::Position3D& v) -> cgfs::Position3D { return M(v); };
-
-    for (const auto& t : model.faces)
-      render_triangle_filled_depth(canvas, t, model.vertices | std::views::transform(xform), P);
+    for (const auto& t : model.triangles(M))
+      render_triangle_filled_depth(canvas, t, P);
   }
 
   inline void render_scene(cgfs::Canvas& canvas, const cgfs::MeshScene& scene, const cgfs::Camera& camera)

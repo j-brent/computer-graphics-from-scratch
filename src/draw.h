@@ -109,13 +109,9 @@ namespace cgfs
     }
   } 
 
-  inline void draw_filled_triangle(Canvas& canvas, const Mesh::TFace& triangle, std::ranges::random_access_range auto&& xformed, auto&& project)
-  requires std::same_as<std::ranges::range_value_t<decltype(xformed)>, Position3D>
+  inline void draw_filled_triangle(Canvas& canvas, const Triangle3D& triangle, auto&& project)
   {
-    const Position3D& v0 = xformed[triangle.a];
-    const Position3D& v1 = xformed[triangle.b];
-    const Position3D& v2 = xformed[triangle.c];
-    const Color& color = triangle.col;
+    const auto& [v0, v1, v2, color] = triangle;
 
     // sort the vertices so that a.y <= b.y <= c.y
     auto vertices = std::array<std::pair<Index2D, float>, 3>{
