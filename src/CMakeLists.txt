@@ -5,16 +5,20 @@ add_library(graphics STATIC
     canvas.h
     canvas.cpp
     color.h
+    draw.h
     extent.h
     index.h
     instance.h
     light.h
+    cgfs_math.h
     position.h
+    projection.h
     render.h
     scene.h
     scene.cpp
     sphere.h
     triangle.h
+    viewport.h
 )
 add_library(cgfs::graphics ALIAS graphics)
 

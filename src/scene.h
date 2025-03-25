@@ -1,6 +1,7 @@
 #pragma once
 
 #include "color.h"
+#include "instance.h"
 #include "light.h"
 #include "position.h"
 #include "sphere.h"
@@ -27,5 +28,10 @@ namespace cgfs
     private:
       std::vector<Sphere> m_spheres;
       std::vector<Light> m_lights;
+  };
+
+  struct MeshScene
+  {
+    std::vector<cgfs::Instance> instances = {};
   };
 }
