@@ -10,20 +10,24 @@ namespace cgfs
 {
 
   // Interpolate between the dependent variables d0 and d1 along the 'axis' of the independent variables i0 and i1
+  // Returns a vector of (i1-i0)+1 values in the range[d0, d1)
   std::vector<int> interpolate(int i0, int d0, int i1, int d1)
   {
     assert(i1 >= i0);
-	auto values = std::vector<int>{};
+	  
+    auto values = std::vector<int>{};
     values.reserve(i1 - i0 + 1);
-
+    
     const auto a = static_cast<float>(d1 - d0) / (i1 - i0);
     auto d = static_cast<float>(d0);
     for (int i = i0; i <= i1; ++i, d += a)
       values.push_back(static_cast<int>(std::round(d)));
    
-    return values;
-  }
-
+      return values;
+    }
+    
+  // Interpolate between the dependent variables d0 and d1 along the 'axis' of the independent variables i0 and i1
+  // Returns a vector of (i1-i0)+1 values in the range[d0, d1)
   std::vector<float> interpolatef(int i0, float d0, int i1, float d1)
   {
     assert(i1 >= i0);
@@ -33,7 +37,7 @@ namespace cgfs
     const auto a = (d1 - d0) / (i1 - i0);
     auto d = d0;
     for (int i = i0; i <= i1; ++i, d += a)
-    values.push_back(d);
+      values.push_back(d);
 
     return values;
   }

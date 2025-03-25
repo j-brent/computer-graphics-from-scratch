@@ -21,7 +21,7 @@ namespace cgfs
 {
   namespace detail
   {
-
+    // convert float to int using std::round()
     inline int ftoi(float f)
     {
       return static_cast<int>(std::round(f));
@@ -134,9 +134,9 @@ namespace cgfs
     const auto x12 = interpolate(p1.y, p1.x, p2.y, p2.x);
     const auto x02 = interpolate(p0.y, p0.x, p2.y, p2.x);
 
-    auto z01 = interpolatef(p0.y, z0, p1.y, z1);
-    const auto z12 = interpolatef(p1.y, z1, p2.y, z2);
-    const auto z02 = interpolatef(p0.y, z0, p2.y, z2);
+    auto z01 = interpolatef(p0.y, 1/z0, p1.y, 1/z1);
+    const auto z12 = interpolatef(p1.y, 1/z1, p2.y, 1/z2);
+    const auto z02 = interpolatef(p0.y, 1/z0, p2.y, 1/z2);
 
     // concatenate the short sides
     x01.pop_back();
@@ -166,7 +166,7 @@ namespace cgfs
       for (auto x = x_left.at(y-p0.y); x <= x_right.at(y-p0.y); ++x)
       {
         const auto z = z_segment.at(x - x_l);
-        if (z < canvas.depthBuffer({x, y}))
+        if (z > canvas.depthBuffer({x, y}))
         {
           canvas.putPixel({x, y}, color);
           canvas.depthBuffer({x, y}) = z;
