@@ -5,6 +5,7 @@
 #include "extent.h"
 #include "index.h"
 #include "interpolation.h"
+#include "light.h"
 #include "mesh.h"
 #include "position.h"
 #include "triangle.h"
@@ -13,6 +14,7 @@
 #include <algorithm>
 #include <ranges>
 #include <utility>
+#include <vector>
 
 namespace cgfs
 {
@@ -109,10 +111,23 @@ namespace cgfs
     }
   } 
 
-  inline void draw_filled_triangle(Canvas& canvas, const Triangle3D& triangle, auto&& project)
+  // the vertices of triangle are in camera coordinates
+  // the Projection operator projects from camera (3D) coordinates to canvas (2D) coordinates
+  inline void draw_filled_triangle(Canvas& canvas, const Triangle3D& triangle, const cgfs::Projection& project, const std::vector<Light>& lights = {})
   {
     const auto& [v0, v1, v2, color] = triangle;
 
+    const float intensity = !lights.empty()
+    ? [&](){
+        const auto sp = SurfacePoint{(v0 + v1 + v2) / 3, sp3::cross(v1-v0, v2-v0)};
+        // V is the "view vector" (the direction from the surface point to the camera (in world coordinates?))
+        const auto V = Position3D{0, 0, 0} - sp.pos; // vector coordinates are the same in camera and world space
+        return std::accumulate(lights.begin(), lights.end(), 0.0f, [&sp, &V](float acc, const Light& light){
+          return acc + light.intensity(sp, V);
+        });
+      } ()
+    : 1.f;
+      
     // sort the vertices so that a.y <= b.y <= c.y
     auto vertices = std::array<std::pair<Index2D, float>, 3>{
       std::pair{project(v0), v0.z},
@@ -164,7 +179,7 @@ namespace cgfs
         const auto z = z_segment.at(x - x_l);
         if (z > canvas.depthBuffer({x, y}))
         {
-          canvas.putPixel({x, y}, color);
+          canvas.putPixel({x, y}, intensity * color);
           canvas.depthBuffer({x, y}) = z;
         }
       }

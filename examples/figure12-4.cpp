@@ -25,7 +25,7 @@ int main()
     cgfs::Viewport{{1, 1}, 1}
   };
 
-  render_scene(canvas, scene, camera);
+  cgfs::render_scene(canvas, scene, camera);
 
-  save_as_bmp(canvas, "figure12-4.bmp");
+  cgfs::save_as_bmp(canvas, "figure12-4.bmp");
 }

@@ -86,9 +86,9 @@ namespace cgfs
     draw_filled_triangle(canvas, projected[triangle.a], projected[triangle.b], projected[triangle.c], triangle.col);
   }
 
-  inline void render_triangle_filled_depth(Canvas& canvas, const Triangle3D& t3d, auto&& project)
+  inline void render_triangle_filled_depth(Canvas& canvas, const Triangle3D& t3d, const cgfs::Projection& P, const std::vector<Light> lights = {})
   {
-    draw_filled_triangle(canvas, t3d, project);
+    draw_filled_triangle(canvas, t3d, P, lights);
   }
 
   inline void render_object(Canvas& canvas, const Mesh& object, const Extent2D& V_wh, float d)
@@ -110,12 +110,12 @@ namespace cgfs
 
   // P is the projection operator from camera to canvas coordinates
   // M is the transformation from model to camera coordinates
-  inline void render_model(cgfs::Canvas& canvas, const cgfs::Mesh& model, const cgfs::Projection& P, const sp3::transform& M)
+  inline void render_model(cgfs::Canvas& canvas, const cgfs::Mesh& model, const cgfs::Projection& P, const sp3::transform& M, const std::vector<Light>& lights = {})
   {
     const auto front_facing = [](const Triangle3D& t){ return !detail::is_back_facing(t); };
     
     for (const auto& t : model.triangles(M) | std::views::filter(front_facing))
-      render_triangle_filled_depth(canvas, t, P);
+      render_triangle_filled_depth(canvas, t, P, lights);
   }
 
   inline void render_scene(cgfs::Canvas& canvas, const cgfs::MeshScene& scene, const cgfs::Camera& camera)
@@ -128,6 +128,6 @@ namespace cgfs
 
     // I.transform is the transformation from model to world coordinates
     for (const auto& I : scene.instances)
-      render_model(canvas, I.model, P, M_camera * I.transform);
+      render_model(canvas, I.model, P, M_camera * I.transform, scene.lights);
   }
 }

@@ -22,6 +22,16 @@ namespace cgfs
     using Position3D = sp3::point;
     using Vector3D = sp3::vector;
 
+    inline Position3D operator+(const Position3D& lhs, const Position3D& rhs)
+    {
+      return {lhs.x + rhs.x, lhs.y + rhs.y, + lhs.z + rhs.z};
+    }
+
+    inline Position3D operator/(const Position3D& p, float s)
+    {
+      return {p.x/s, p.y/s, + p.z/s};
+    }
+
     inline float length(const Vector3D& v)
     {
         return std::hypot(v.x, v.y, v.z);

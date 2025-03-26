@@ -28,10 +28,11 @@ namespace cgfs
     private:
       std::vector<Sphere> m_spheres;
       std::vector<Light> m_lights;
-  };
-
-  struct MeshScene
-  {
-    std::vector<cgfs::Instance> instances = {};
-  };
+    };
+    
+    struct MeshScene
+    {
+      std::vector<cgfs::Instance> instances = {};
+      std::vector<Light> lights = {};
+    };
 }
