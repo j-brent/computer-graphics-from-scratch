@@ -73,7 +73,7 @@ namespace cgfs
     private:
         Vector3D v_;
     };
-s
+
     struct SurfacePoint
     {
       Position3D pos = {};
