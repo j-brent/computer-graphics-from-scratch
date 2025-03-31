@@ -3,6 +3,8 @@
 #include "color.h"
 #include "index.h"
 
+#include <array>
+
 namespace cgfs
 {
 
@@ -25,6 +27,13 @@ namespace cgfs
     Position3D a;
     Position3D b;
     Position3D c;
+    Color col;
+  };
+
+  struct SuperTriangle3D
+  {
+    std::array<Position3D, 3> vertices;
+    std::array<UnitVector3D, 3> normals;
     Color col;
   };
 }

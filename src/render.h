@@ -37,14 +37,22 @@ namespace cgfs
       return detail::viewport_to_canvas(V_xy, V_wh, C_wh);
     }
 
-    inline bool is_back_facing(const Triangle3D& t)
+    inline bool is_back_facing(const Position3D& a, const Position3D& b, const Position3D& c)
     {
-      const auto& [a, b, c, _] = t;
-
       const auto N = sp3::cross(b-a, c-a);
       const auto V = a - Position3D{0, 0, 0};
-
       return sp3::dot(N, V) > 0;
+    }
+
+    inline bool is_back_facing(const Triangle3D& t)
+    {
+      return is_back_facing(t.a, t.b, t.c);
+    }
+
+    inline bool is_back_facing(const SuperTriangle3D& t)
+    {
+      const auto& [a, b, c] = t.vertices;
+      return is_back_facing(a, b, c);
     }
   }
 }
@@ -86,11 +94,6 @@ namespace cgfs
     draw_filled_triangle(canvas, projected[triangle.a], projected[triangle.b], projected[triangle.c], triangle.col);
   }
 
-  inline void render_triangle_filled_depth(Canvas& canvas, const Triangle3D& t3d, const cgfs::Projection& P, const std::vector<Light> lights = {})
-  {
-    draw_filled_triangle(canvas, t3d, P, lights);
-  }
-
   inline void render_object(Canvas& canvas, const Mesh& object, const Extent2D& V_wh, float d)
   {
     const auto project = [&](const Position3D& v){ return detail::project_vertex(v, d, V_wh, canvas.extent());};
@@ -110,15 +113,15 @@ namespace cgfs
 
   // P is the projection operator from camera to canvas coordinates
   // M is the transformation from model to camera coordinates
-  inline void render_model(cgfs::Canvas& canvas, const cgfs::Mesh& model, const cgfs::Projection& P, const sp3::transform& M, const std::vector<Light>& lights = {})
+  void render_model(cgfs::Canvas& canvas, auto&& model, const cgfs::Projection& P, const sp3::transform& M, const std::vector<Light>& lights = {})
   {
-    const auto front_facing = [](const Triangle3D& t){ return !detail::is_back_facing(t); };
+    const auto front_facing = [](const auto& t){ return !detail::is_back_facing(t); };
     
     for (const auto& t : model.triangles(M) | std::views::filter(front_facing))
-      render_triangle_filled_depth(canvas, t, P, lights);
+      draw_filled_triangle(canvas, t, P, lights);
   }
 
-  inline void render_scene(cgfs::Canvas& canvas, const cgfs::MeshScene& scene, const cgfs::Camera& camera)
+  void render_scene(cgfs::Canvas& canvas, auto&& scene, const cgfs::Camera& camera)
   {
     // M_camera is the transformation from world to camera coordinates
     const auto M_camera = cgfs::make_camera_matrix(camera.pose());

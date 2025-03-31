@@ -34,6 +34,8 @@ namespace cgfs
       };
     }
 
+    const Viewport& viewport() const { return m_viewport; }
+
   private:
     Extent2D m_canvas_dimensions = {0, 0};
     Viewport m_viewport = {{1, 1}, 1};

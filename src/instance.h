@@ -5,9 +5,10 @@
 
 namespace cgfs
 {
+  template<typename TModel = Mesh>
   struct Instance
   {
-    Mesh model = {};
+    TModel model = {};
     sp3::transform transform = {};
   };
 }

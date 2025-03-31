@@ -43,17 +43,37 @@ namespace cgfs
         return {v.x / len, v.y / len, v.z / len};
     }
 
+    inline Vector3D& operator+=(Vector3D& lhs, const Vector3D& rhs)
+    {
+      lhs.x += rhs.x;
+      lhs.x += rhs.y;
+      lhs.y += rhs.z;
+
+      return lhs;
+    }
+
     class UnitVector3D
     {
-        public:
-            UnitVector3D(Vector3D v) : v_{normalize(v)} {}
+    public:
+      UnitVector3D() = default;
+      ~UnitVector3D() = default;
 
-            operator Vector3D() const { return v_; }
+      UnitVector3D(const UnitVector3D&) = default;
+      UnitVector3D& operator=(const UnitVector3D&) = default;
 
-        private:
-            Vector3D v_;
+      UnitVector3D(UnitVector3D&&) = default;
+      UnitVector3D& operator=(UnitVector3D&&) = default;
+
+
+      UnitVector3D(Vector3D v) : v_{normalize(v)} {}
+      UnitVector3D(float x, float y, float z) : UnitVector3D{Vector3D{x, y, z}} {}
+
+      operator Vector3D() const { return v_; }
+
+    private:
+        Vector3D v_;
     };
-
+s
     struct SurfacePoint
     {
       Position3D pos = {};

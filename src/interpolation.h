@@ -28,10 +28,11 @@ namespace cgfs
     
   // Interpolate between the dependent variables d0 and d1 along the 'axis' of the independent variables i0 and i1
   // Returns a vector of (i1-i0)+1 values in the range[d0, d1)
-  std::vector<float> interpolatef(int i0, float d0, int i1, float d1)
+  template<typename T>
+  std::vector<T> interpolatef(int i0, const T& d0, int i1, const T& d1)
   {
     assert(i1 >= i0);
-    auto values = std::vector<float>{};
+    auto values = std::vector<T>{};
     values.reserve(i1 - i0 + 1);
     
     const auto a = (d1 - d0) / (i1 - i0);

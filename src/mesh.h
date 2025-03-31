@@ -6,6 +6,7 @@
 
 #include "sp3/transform.h"
 
+#include <array>
 #include <ranges>
 #include <vector>
 
@@ -46,6 +47,76 @@ namespace cgfs
       return faces | std::ranges::views::transform(to_triangle);
     }
   };
+
+struct MultiNormalMesh
+{
+  struct TFace
+  {
+    size_t a;
+    size_t b;
+    size_t c;
+    Color col;
+    size_t na;
+    size_t nb;
+    size_t nc;
+  };
+  std::vector<Position3D> vertices;
+  std::vector<UnitVector3D> normals;
+  std::vector<TFace> faces;
+
+  // faces as triangles (SuperTriangle3D) in model space
+  auto triangles(sp3::transform T) const
+  {
+    const auto to_super_triangle = [T = std::move(T), this](const TFace& t){
+      return SuperTriangle3D{
+        {{T(vertices[t.a]), T(vertices[t.b]), T(vertices[t.c])}},
+        {{normals[t.na], normals[t.nb], normals[t.nc]}},
+        t.col
+      };
+    };
+    return faces | std::ranges::views::transform(to_super_triangle);
+  }
+};
+
+inline MultiNormalMesh solid_cube()
+{
+  const auto vertices = std::vector<Position3D>{
+    { 1, 1, 1},
+    {-1, 1, 1},
+    {-1, -1, 1},
+    { 1, -1, 1},
+    { 1, 1, -1},
+    {-1, 1, -1},
+    {-1, -1, -1},
+    { 1, -1, -1},
+  };
+
+  const auto normals = std::vector<UnitVector3D>{
+    {1, 0, 0},  // 0: x
+    {0, 1, 0},  // 1: y
+    {0, 0, 1},  // 2: z
+    {-1, 0, 0}, // 3: -x
+    {0, -1, 0}, // 4: -y
+    {0, 0, -1}, // 5: -z
+  };
+
+  const auto faces = std::vector<MultiNormalMesh::TFace>{
+    {0, 1, 2, cgfs::Red, 2, 2, 2},
+    {0, 2, 3, cgfs::Red, 2, 2, 2},
+    {4, 0, 3, cgfs::Green, 0, 0, 0},
+    {4, 3, 7, cgfs::Green, 0, 0, 0},
+    {5, 4, 7, cgfs::Blue, 5, 5, 5},
+    {5, 7, 6, cgfs::Blue, 5, 5, 5},
+    {1, 5, 6, cgfs::Yellow, 3, 3, 3},
+    {1, 6, 2, cgfs::Yellow, 3, 3, 3},
+    {4, 5, 1, cgfs::Purple, 1, 1, 1},
+    {4, 1, 0, cgfs::Purple, 1, 1, 1},
+    {2, 6, 7, cgfs::Cyan, 4, 4, 4},
+    {2, 7, 3, cgfs::Cyan, 4, 4, 4},
+  };
+
+  return {std::move(vertices), std::move(normals), std::move(faces)};
+}
 
   inline Mesh wireframe_cube()
   {
@@ -129,7 +200,6 @@ namespace cgfs
       {0, 4, 5, cgfs::Cyan},
     }};
   }
-
 
   inline Mesh wireframe_icosahedron()
   {
