@@ -11,7 +11,9 @@
 #include "position.h"
 #include "scene.h"
 
-#include <ranges>
+// #include <ranges>
+#include <numeric>
+#include <type_traits>
 
 namespace cgfs
 {
@@ -19,7 +21,18 @@ namespace cgfs
   {
     auto sum(const auto& container)
     {
-      return *std::ranges::fold_left_first(container, [](const auto& a, const auto& b){ return a + b; });
+      using namespace std;
+      const auto b = begin(container);
+      const auto e = end(container);
+      if (b != e)
+      {
+        const auto init = *b;
+        return std::accumulate(next(b), e, init, [](const auto& a, const auto& b){ return a + b; });
+      } else
+      {
+        using T = typename std::remove_cvref_t<decltype(container)>::value_type;
+        return T{};
+      }
     }
 
     inline cgfs::Position3D canvas_to_viewport(cgfs::Index2D C_xy, cgfs::Extent2D C_wh, cgfs::Extent2D V_wh)
