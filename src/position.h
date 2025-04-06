@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sp3/point.h"
+#include "sp3/unit_vector.h"
 #include "sp3/vector.h"
 #include "sp3/vector_point_functions.h"
 
@@ -32,44 +33,10 @@ namespace cgfs
       return {p.x/s, p.y/s, + p.z/s};
     }
 
-    inline float length(const Vector3D& v)
-    {
-        return std::hypot(v.x, v.y, v.z);
-    }
-
-    inline Vector3D normalize(const Vector3D& v)
-    {
-        float len = length(v);
-        return {v.x / len, v.y / len, v.z / len};
-    }
-
-    class UnitVector3D
-    {
-    public:
-      UnitVector3D() = default;
-      ~UnitVector3D() = default;
-
-      UnitVector3D(const UnitVector3D&) = default;
-      UnitVector3D& operator=(const UnitVector3D&) = default;
-
-      UnitVector3D(UnitVector3D&&) = default;
-      UnitVector3D& operator=(UnitVector3D&&) = default;
-
-
-      UnitVector3D(Vector3D v) : v_{normalize(v)} {}
-      UnitVector3D(float x, float y, float z) : UnitVector3D{Vector3D{x, y, z}} {}
-
-      operator Vector3D() { return v_; }
-      operator const Vector3D() const { return v_; }
-
-    private:
-        Vector3D v_;
-    };
-
     struct SurfacePoint
     {
       Position3D pos = {};
-      UnitVector3D normal = {{0, 0, 0}};
+      sp3::unit_vector normal = {{0, 0, 0}};
       int specularity = -1;
     };
 
