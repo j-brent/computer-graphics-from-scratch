@@ -8,7 +8,6 @@
 
 namespace cgfs
 {
-
   // Interpolate between the dependent variables d0 and d1 along the 'axis' of the independent variables i0 and i1
   // Returns a vector of (i1-i0)+1 values in the range[d0, d1)
   std::vector<int> interpolate(int i0, int d0, int i1, int d1)
@@ -28,10 +27,11 @@ namespace cgfs
     
   // Interpolate between the dependent variables d0 and d1 along the 'axis' of the independent variables i0 and i1
   // Returns a vector of (i1-i0)+1 values in the range[d0, d1)
-  std::vector<float> interpolatef(int i0, float d0, int i1, float d1)
+  template<typename T>
+  std::vector<T> interpolatef(int i0, const T& d0, int i1, const T& d1)
   {
     assert(i1 >= i0);
-    auto values = std::vector<float>{};
+    auto values = std::vector<T>{};
     values.reserve(i1 - i0 + 1);
     
     const auto a = (d1 - d0) / (i1 - i0);
@@ -48,7 +48,7 @@ namespace cgfs
       inline std::vector<Index2D> interpolate_x(const Index2D& a, const Index2D& b, float slope)
       {
         if(b.x < a.x) // make sure a.x < b.x
-        return interpolate_x(b, a, slope);
+          return interpolate_x(b, a, slope);
         
         std::vector<Index2D> result;
         result.reserve(b.x - a.x + 1);
@@ -80,15 +80,15 @@ namespace cgfs
       }
     }
   
-      inline std::vector<Index2D> interpolate(const Index2D& a, const Index2D& b)
-      {
-        const auto [dx, dy] = b - a;
-        // TODO: handle case where dx = 0
-        const auto slope = static_cast<float>(dy) / dx;
-  
-        if (std::abs(slope) < 1) // line is horizontal-ish
-            return detail::interpolate_x(a, b, slope);
-        else // line is vertical-ish
-            return detail::interpolate_y(a, b, slope);
-      }  
+  inline std::vector<Index2D> interpolate(const Index2D& a, const Index2D& b)
+  {
+    const auto [dx, dy] = b - a;
+    // TODO: handle case where dx = 0
+    const auto slope = static_cast<float>(dy) / dx;
+
+    if (std::abs(slope) < 1) // line is horizontal-ish
+        return detail::interpolate_x(a, b, slope);
+    else // line is vertical-ish
+        return detail::interpolate_y(a, b, slope);
+  }  
 }

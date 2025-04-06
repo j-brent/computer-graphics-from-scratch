@@ -21,7 +21,7 @@ namespace cgfs
 
     const sp3::pose& pose() const { return m_pose; }
 
-    Projection projection(cgfs::Extent2D canvas_extent) const
+    Projection projection(const cgfs::Extent2D& canvas_extent) const
     {
       return Projection{canvas_extent, m_viewport};
     }

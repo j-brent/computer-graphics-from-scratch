@@ -22,7 +22,7 @@ namespace
 
   struct MeshScene
   {
-    std::vector<cgfs::Instance> instances = {};
+    std::vector<cgfs::Instance<cgfs::Mesh>> instances = {};
   };
 
   class Projection
@@ -76,7 +76,7 @@ namespace
 
 int main()
 {
-  const auto scene = MeshScene{std::vector<cgfs::Instance>{
+  const auto scene = MeshScene{std::vector<cgfs::Instance<cgfs::Mesh>>{
     {cgfs::wireframe_cube(), sp3::transform{{-1.5f, 0.f, 7.f}, {}}},
     {cgfs::wireframe_cube(), sp3::transform{{1.2f, 1.0f, 6.f}, {}}},
   }};

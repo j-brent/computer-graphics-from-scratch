@@ -23,7 +23,7 @@ namespace
 
   struct MeshScene
   {
-    std::vector<cgfs::Instance> instances = {};
+    std::vector<cgfs::Instance<cgfs::Mesh>> instances = {};
   };
 
   class Projection
@@ -84,7 +84,7 @@ int main()
 
     const auto r = sp3::rotation{sp3::xhat, sp3::angle{theta}};
 
-    const auto scene = MeshScene{std::vector<cgfs::Instance>{
+    const auto scene = MeshScene{std::vector<cgfs::Instance<cgfs::Mesh>>{
       {cgfs::wireframe_icosahedron(), sp3::transform{{-0.2f, 0.8f, 6.f}, r, 3.f}},
     }};
     cgfs::Canvas canvas{{400, 400}};

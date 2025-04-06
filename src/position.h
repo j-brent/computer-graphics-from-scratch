@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sp3/point.h"
+#include "sp3/unit_vector.h"
 #include "sp3/vector.h"
 #include "sp3/vector_point_functions.h"
 
@@ -22,32 +23,20 @@ namespace cgfs
     using Position3D = sp3::point;
     using Vector3D = sp3::vector;
 
-    inline float length(const Vector3D& v)
+    inline Position3D operator+(const Position3D& lhs, const Position3D& rhs)
     {
-        return std::hypot(v.x, v.y, v.z);
+      return {lhs.x + rhs.x, lhs.y + rhs.y, + lhs.z + rhs.z};
     }
 
-    inline Vector3D normalize(const Vector3D& v)
+    inline Position3D operator/(const Position3D& p, float s)
     {
-        float len = length(v);
-        return {v.x / len, v.y / len, v.z / len};
+      return {p.x/s, p.y/s, + p.z/s};
     }
-
-    class UnitVector3D
-    {
-        public:
-            UnitVector3D(Vector3D v) : v_{normalize(v)} {}
-
-            operator Vector3D() const { return v_; }
-
-        private:
-            Vector3D v_;
-    };
 
     struct SurfacePoint
     {
       Position3D pos = {};
-      UnitVector3D normal = {{0, 0, 0}};
+      sp3::unit_vector normal = {{0, 0, 0}};
       int specularity = -1;
     };
 

@@ -40,7 +40,7 @@ namespace
 
   struct MeshScene
   {
-    std::vector<cgfs::Instance> instances = {};
+    std::vector<cgfs::Instance<cgfs::Mesh>> instances = {};
   };
 
   class Projection
@@ -102,7 +102,7 @@ static void mainloop(void)   /* this will run often, possibly at the monitor's r
 
   const auto r = sp3::rotation{sp3::yhat, sp3::angle{theta}};
 
-  const auto scene = MeshScene{std::vector<cgfs::Instance>{
+  const auto scene = MeshScene{std::vector<cgfs::Instance<cgfs::Mesh>>{
     {cgfs::wireframe_icosahedron(), sp3::transform{{-0.2f, 0.8f, 6.f}, r, 3.f}},
   }};
   cgfs::Canvas canvas{cgfs::Canvas::with_alpha_channel, {400, 400}, cgfs::Black};

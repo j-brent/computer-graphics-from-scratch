@@ -6,6 +6,7 @@
 
 #include "sp3/transform.h"
 
+#include <array>
 #include <ranges>
 #include <vector>
 
@@ -46,6 +47,158 @@ namespace cgfs
       return faces | std::ranges::views::transform(to_triangle);
     }
   };
+
+  struct MultiNormalMesh
+  {
+    struct TFace
+    {
+      size_t a;
+      size_t b;
+      size_t c;
+      Color col;
+      size_t na;
+      size_t nb;
+      size_t nc;
+    };
+    std::vector<Position3D> vertices;
+    std::vector<Vector3D> normals;
+    std::vector<TFace> faces;
+
+    // faces as triangles (SuperTriangle3D) with xform applied to the vertices (whose coordinates are in model space)
+    auto triangles(sp3::transform T) const
+    {
+      const auto to_super_triangle = [T = std::move(T), this](const TFace& t){
+        return SuperTriangle3D{
+          {{T(vertices[t.a]), T(vertices[t.b]), T(vertices[t.c])}},
+          {{T(normals[t.na]), T(normals[t.nb]), T(normals[t.nc])}},
+          t.col
+        };
+      };
+      return faces | std::ranges::views::transform(to_super_triangle);
+    }
+  };
+
+  inline MultiNormalMesh solid_cube()
+  {
+    const auto vertices = std::vector<Position3D>{
+      { 1, 1, 1},
+      {-1, 1, 1},
+      {-1, -1, 1},
+      { 1, -1, 1},
+      { 1, 1, -1},
+      {-1, 1, -1},
+      {-1, -1, -1},
+      { 1, -1, -1},
+    };
+
+    const auto normals = std::vector<Vector3D>{
+      {1, 0, 0},  // 0: x
+      {0, 1, 0},  // 1: y
+      {0, 0, 1},  // 2: z
+      {-1, 0, 0}, // 3: -x
+      {0, -1, 0}, // 4: -y
+      {0, 0, -1}, // 5: -z
+    };
+
+    const auto faces = std::vector<MultiNormalMesh::TFace>{
+      {0, 1, 2, cgfs::Red, 2, 2, 2},
+      {0, 2, 3, cgfs::Red, 2, 2, 2},
+      {4, 0, 3, cgfs::Green, 0, 0, 0},
+      {4, 3, 7, cgfs::Green, 0, 0, 0},
+      {5, 4, 7, cgfs::Blue, 5, 5, 5},
+      {5, 7, 6, cgfs::Blue, 5, 5, 5},
+      {1, 5, 6, cgfs::Yellow, 3, 3, 3},
+      {1, 6, 2, cgfs::Yellow, 3, 3, 3},
+      {4, 5, 1, cgfs::Purple, 1, 1, 1},
+      {4, 1, 0, cgfs::Purple, 1, 1, 1},
+      {2, 6, 7, cgfs::Cyan, 4, 4, 4},
+      {2, 7, 3, cgfs::Cyan, 4, 4, 4},
+    };
+
+    return {std::move(vertices), std::move(normals), std::move(faces)};
+  }
+
+  inline MultiNormalMesh solid_icosahedron()
+{
+  /*
+     0  b -a    b  a  0   -b  a  0  (0, 1, 2)
+     0  b  a   -b  a  0    b  a  0  (3, 2, 1)
+     0  b  a    0 -b  a   -a  0  b  (3, 4, 5)
+     0  b  a    a  0  b    0 -b  a  (3, 6, 4)
+     0  b -a    0 -b -a    a  0 -b  (0, 7, 8)
+     0  b -a   -a  0 -b    0 -b -a  (0, 9, 7)
+     0 -b  a    b -a  0   -b -a  0  (4, 10, 11)
+     0 -b -a   -b -a  0    b -a  0  (7, 11, 10)
+    -b  a  0   -a  0  b   -a  0 -b  (2, 5, 9)
+    -b -a  0   -a  0 -b   -a  0  b  (11, 9, 5)
+     b  a  0    a  0 -b    a  0  b  (1, 8, 6)
+     b -a  0    a  0  b    a  0 -b  (10, 6, 8)
+     0  b  a   -a  0  b   -b  a  0  (3, 5, 2)
+     0  b  a    b  a  0    a  0  b  (3, 1, 6)
+     0  b -a   -b  a  0   -a  0 -b  (0, 2, 9)
+     0  b -a    a  0 -b    b  a  0  (0, 8, 1)
+     0 -b -a   -a  0 -b   -b -a  0  (7, 9, 11)
+     0 -b -a    b -a  0    a  0 -b  (7, 10, 8)
+     0 -b  a   -b -a  0   -a  0  b  (4, 11, 5)
+     0 -b  a    a  0  b    b -a  0  (4, 6, 10)
+     Where a = 1 / 2 and b = 1 / (2 * phi)
+     phi is the golden ratio = (1 + sqrt(5)) / 2
+  */
+  const float a = 1.f / 2;
+  const float two_phi = 1.f + std::sqrt(5);
+  const float b = 1.f / two_phi;
+
+  auto vertices = std::vector<Position3D> {
+    { 0,  b, -a},
+    { b,  a,  0},
+    {-b,  a,  0},
+    { 0,  b,  a},
+    { 0, -b,  a},
+    {-a,  0,  b},
+    { a,  0,  b},
+    { 0, -b, -a},
+    { a,  0, -b},
+    {-a,  0, -b},
+    { b, -a,  0},
+    {-b, -a,  0},
+  };
+
+  std::vector<Vector3D> normals = [](const auto& vertices){
+    std::vector<Vector3D> normals;
+    std::ranges::transform(vertices, std::back_inserter(normals), [](const auto& v){ return v - Position3D{0, 0, 0}; });
+    return normals;
+  }(vertices);
+  
+  auto faces = std::vector<MultiNormalMesh::TFace>{
+    {0, 1, 2, cgfs::Red, 0, 1, 2},
+    {3, 2, 1, cgfs::Orange, 3, 2, 1},
+    {3, 4, 5, cgfs::Yellow, 3, 4, 5},
+    {3, 6, 4, cgfs::Green, 3, 6, 4},
+    {0, 7, 8, cgfs::Green, 0, 7, 8},
+    {0, 9, 7, cgfs::Blue, 0, 9, 7},
+    {4, 10, 11, cgfs::Purple, 4, 10, 11},
+    {7, 11, 10, cgfs::Cyan, 7, 11, 10},
+    {2, 5, 9, cgfs::Red, 2, 5, 9},
+    {11, 9, 5, cgfs::Orange, 11, 9, 5},
+    {1, 8, 6, cgfs::Yellow, 1, 8, 6},
+    {10, 6, 8, cgfs::Green, 10, 6, 8},
+    {3, 5, 2, cgfs::Blue, 3, 5, 2},
+    {3, 1, 6, cgfs::Purple, 3, 1, 6},
+    {0, 2, 9, cgfs::Cyan, 0, 2, 9},
+    {0, 8, 1, cgfs::Red, 0, 8, 1},
+    {7, 9, 11, cgfs::Orange, 7, 9, 11},
+    {7, 10, 8, cgfs::Yellow, 7, 10, 8},
+    {4, 11, 5, cgfs::Green, 4, 11, 5},
+    {4, 6, 10, cgfs::Blue, 4, 6, 10},
+  };
+
+  return {
+    std::move(vertices),
+    std::move(normals),
+    std::move(faces)
+    };
+}
+
 
   inline Mesh wireframe_cube()
   {
@@ -129,7 +282,6 @@ namespace cgfs
       {0, 4, 5, cgfs::Cyan},
     }};
   }
-
 
   inline Mesh wireframe_icosahedron()
   {
