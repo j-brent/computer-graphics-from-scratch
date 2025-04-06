@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(cmake/CPM.cmake)
-CPMAddPackage("gh:j-brent/three-space#65f1ec3cbdc3916f0c82496d90e1bee9ea18693b")
+CPMAddPackage("gh:j-brent/three-space#cd54614b9685939f947c047d59ad5611c26bb2c5")
 
 add_subdirectory(ext)
 add_subdirectory(src)

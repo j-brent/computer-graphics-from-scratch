@@ -16,6 +16,8 @@
 #include <utility>
 #include <vector>
 
+#include <iostream>
+
 namespace cgfs
 {
   namespace detail
@@ -172,7 +174,6 @@ namespace cgfs
   inline void draw_filled_triangle(Canvas& canvas, const Triangle3D& triangle, const cgfs::Projection& project, const std::vector<Light>& lights = {})
   {
     const auto& [v0, v1, v2, color] = triangle;
-    // const auto& [n0, n1, n2] = triangle_vertex_normals;
 
     const float intensity = lights.empty()
     ? 1.0f
@@ -199,11 +200,6 @@ namespace cgfs
 
     auto [x_left, x_right] = detail::triangle_edges({{p0.y, p1.y, p2.y}}, {{p0.x, p1.x, p2.x}});
     auto [z_left, z_right] = detail::triangle_edgesf<float>({{p0.y, p1.y, p2.y}}, {{1/z0, 1/z1, 1/z2}});
-    // auto [nx_left, nx_right] = detail::triangle_edgesf({{p0.y, p1.y, p2.y}}, {{n0.x, n1.x, n2.x}});
-    // auto [ny_left, ny_right] = detail::triangle_edgesf({{p0.y, p1.y, p2.y}}, {{n0.y, n1.y, n2.y}});
-    // auto [nz_left, nz_right] = detail::triangle_edgesf({{p0.y, p1.y, p2.y}}, {{n0.z, n1.z, n2.z}});
-    // or
-    // auto [n_left, n_right] = detail::triangle_edgesf<UnitVector3D>({{p0.y, p1.y, p2.y}}, {{n0, n1, n2}});
 
     // determine which is left and which is right
     size_t m = x_right.size() / 2;
@@ -214,12 +210,6 @@ namespace cgfs
     {
       std::swap(x_left, x_right);
       std::swap(z_left, z_right);
-      // std::swap(nx_left, nx_right);
-      // std::swap(ny_left, ny_right);
-      // std::swap(nz_left, nz_right);
-      // or
-      // std::swap(n_left, n_right);
-
     }
 
     // draw the horizontal segments
@@ -229,24 +219,12 @@ namespace cgfs
       const auto& x_l = x_left.at(i);
       const auto& x_r = x_right.at(i);
       const auto z_segment = interpolatef(x_l, z_left.at(i), x_r, z_right.at(i));
-      // const auto nx_segment = interpolatef(x_l, nx_left.at(i), x_r, nx_right.at(i));
-      // const auto ny_segment = interpolatef(x_l, ny_left.at(i), x_r, ny_right.at(i));
-      // const auto nz_segment = interpolatef(x_l, nz_left.at(i), x_r, nz_right.at(i));
-      // or 
-      // const auto n_segment = interpolatef(x_l, n_left.at(i), x_r, n_right.at(i));
       for (auto x = x_l; x <= x_r; ++x)
       {
         const size_t j = (x - x_l);
         const auto z = z_segment.at(j);
         if (z > canvas.depthBuffer({x, y}))
         {
-          // const auto nx = nx_segment.at(j);
-          // const auto ny = ny_segment.at(j);
-          // const auto nz = nz_segment.at(j);
-          // const intensity = detail::phong({x, y}, z, d, {nx, ny, nz}, lights);
-          //or
-          // const auto n = n_segment.at(j);
-          // const intensity = detail::phong({x, y}, z, d, n, lights);
           canvas.putPixel({x, y}, intensity * color);
           canvas.depthBuffer({x, y}) = z;
         }
@@ -261,35 +239,25 @@ namespace cgfs
     const auto& [v0, v1, v2] = triangle.vertices;
     const auto& [n0, n1, n2] = triangle.normals;
     const auto& color = triangle.col;
-
     const float d = project.viewport().distance;
-
-    const float intensity = lights.empty()
-    ? 1.0f
-    : [&](){
-        const auto sp = SurfacePoint{(v0 + v1 + v2) / 3, sp3::cross(v1-v0, v2-v0)};
-        // V is the "view vector" (the direction from the surface point to the camera (in world coordinates?))
-        const auto V = Position3D{0, 0, 0} - sp.pos; // vector coordinates are the same in camera and world space
-        return std::accumulate(lights.begin(), lights.end(), 0.0f, [&sp, &V](float acc, const Light& light){
-          return acc + light.intensity(sp, V);
-        });
-      } ();
       
     // sort the vertices so that a.y <= b.y <= c.y
-    auto vertices = std::array<std::pair<Index2D, float>, 3>{
-      std::pair{project(v0), v0.z},
-      std::pair{project(v1), v1.z},
-      std::pair{project(v2), v2.z}
-    };
-    std::sort(vertices.begin(), vertices.end(), [](const auto& lhs, const auto& rhs){ return lhs.first.y < rhs.first.y; });
+    auto vertices = std::array<std::tuple<Index2D, float, Vector3D>, 3>{{
+      {project(v0), v0.z, n0},
+      {project(v1), v1.z, n1},
+      {project(v2), v2.z, n2}
+    }};
+    std::sort(vertices.begin(), vertices.end(), [](const auto& lhs, const auto& rhs){ return std::get<0>(lhs).y < std::get<0>(rhs).y; });
     const auto& [A, B, C] = vertices;
-    const auto& [p0, z0] = A;
-    const auto& [p1, z1] = B;
-    const auto& [p2, z2] = C;
+    const auto& [p0, z0, nn0] = A;
+    const auto& [p1, z1, nn1] = B;
+    const auto& [p2, z2, nn2] = C;
 
     auto [x_left, x_right] = detail::triangle_edges({{p0.y, p1.y, p2.y}}, {{p0.x, p1.x, p2.x}});
     auto [z_left, z_right] = detail::triangle_edgesf<float>({{p0.y, p1.y, p2.y}}, {{1/z0, 1/z1, 1/z2}});
-    auto [n_left, n_right] = detail::triangle_edgesf<Vector3D>({{p0.y, p1.y, p2.y}}, {{n0, n1, n2}});
+    auto [nx_left, nx_right] = detail::triangle_edgesf<float>({{p0.y, p1.y, p2.y}}, {{nn0.x, nn1.x, nn2.x}});
+    auto [ny_left, ny_right] = detail::triangle_edgesf<float>({{p0.y, p1.y, p2.y}}, {{nn0.y, nn1.y, nn2.y}});
+    auto [nz_left, nz_right] = detail::triangle_edgesf<float>({{p0.y, p1.y, p2.y}}, {{nn0.z, nn1.z, nn2.z}});
 
     // determine which is left and which is right
     size_t m = x_right.size() / 2;
@@ -300,7 +268,9 @@ namespace cgfs
     {
       std::swap(x_left, x_right);
       std::swap(z_left, z_right);
-      std::swap(n_left, n_right);
+      std::swap(nx_left, nx_right);
+      std::swap(ny_left, ny_right);
+      std::swap(nz_left, nz_right);
     }
 
     // draw the horizontal segments
@@ -310,15 +280,20 @@ namespace cgfs
       const auto& x_l = x_left.at(i);
       const auto& x_r = x_right.at(i);
       const auto z_segment = interpolatef(x_l, z_left.at(i), x_r, z_right.at(i));
-      const auto n_segment = interpolatef(x_l, n_left.at(i), x_r, n_right.at(i));
+      const auto nx_segment = interpolatef(x_l, nx_left.at(i), x_r, nx_right.at(i));
+      const auto ny_segment = interpolatef(x_l, ny_left.at(i), x_r, ny_right.at(i));
+      const auto nz_segment = interpolatef(x_l, nz_left.at(i), x_r, nz_right.at(i));
       for (auto x = x_l; x <= x_r; ++x)
       {
         const size_t j = (x - x_l);
         const auto z = z_segment.at(j);
         if (z > canvas.depthBuffer({x, y}))
         {
-          const auto& n = n_segment.at(j);
-          const auto intensity = detail::phong({x, y}, z, d, n, lights);
+          const auto& nx = nx_segment.at(j);
+          const auto& ny = ny_segment.at(j);
+          const auto& nz = nz_segment.at(j);
+          const auto intensity = detail::phong({x, y}, z, d, {nx, ny, nz}, lights);
+
           canvas.putPixel({x, y}, intensity * color);
           canvas.depthBuffer({x, y}) = z;
         }

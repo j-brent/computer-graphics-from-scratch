@@ -17,6 +17,11 @@ namespace cgfs
 {
   namespace detail
   {
+    auto sum(const auto& container)
+    {
+      return *std::ranges::fold_left_first(container, [](const auto& a, const auto& b){ return a + b; });
+    }
+
     inline cgfs::Position3D canvas_to_viewport(cgfs::Index2D C_xy, cgfs::Extent2D C_wh, cgfs::Extent2D V_wh)
     {
       const float d = 1;
@@ -37,22 +42,25 @@ namespace cgfs
       return detail::viewport_to_canvas(V_xy, V_wh, C_wh);
     }
 
-    inline bool is_back_facing(const Position3D& a, const Position3D& b, const Position3D& c)
+    inline bool is_back_facing(const Vector3D& normal, const Vector3D& view)
     {
-      const auto N = sp3::cross(b-a, c-a);
-      const auto V = a - Position3D{0, 0, 0};
-      return sp3::dot(N, V) > 0;
+      return sp3::dot(normal, view) > 0;
     }
 
     inline bool is_back_facing(const Triangle3D& t)
     {
-      return is_back_facing(t.a, t.b, t.c);
+      const auto& [a, b, c, _] = t;
+      const auto N = sp3::cross(b-a, c-a);
+      const auto V = a - Position3D{0, 0, 0};
+      return is_back_facing(N, V);
     }
-
+    
     inline bool is_back_facing(const SuperTriangle3D& t)
     {
-      const auto& [a, b, c] = t.vertices;
-      return is_back_facing(a, b, c);
+      const auto N = detail::sum(t.normals) / 3;
+      const auto p = detail::sum(t.vertices) / 3;
+      const auto V = p - Position3D{0, 0, 0};
+      return is_back_facing(N, V);
     }
   }
 }
@@ -116,7 +124,7 @@ namespace cgfs
   void render_model(cgfs::Canvas& canvas, auto&& model, const cgfs::Projection& P, const sp3::transform& M, const std::vector<Light>& lights = {})
   {
     const auto front_facing = [](const auto& t){ return !detail::is_back_facing(t); };
-    
+
     for (const auto& t : model.triangles(M) | std::views::filter(front_facing))
       draw_filled_triangle(canvas, t, P, lights);
   }

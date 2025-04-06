@@ -43,15 +43,6 @@ namespace cgfs
         return {v.x / len, v.y / len, v.z / len};
     }
 
-    inline Vector3D& operator+=(Vector3D& lhs, const Vector3D& rhs)
-    {
-      lhs.x += rhs.x;
-      lhs.x += rhs.y;
-      lhs.y += rhs.z;
-
-      return lhs;
-    }
-
     class UnitVector3D
     {
     public:
@@ -68,7 +59,8 @@ namespace cgfs
       UnitVector3D(Vector3D v) : v_{normalize(v)} {}
       UnitVector3D(float x, float y, float z) : UnitVector3D{Vector3D{x, y, z}} {}
 
-      operator Vector3D() const { return v_; }
+      operator Vector3D() { return v_; }
+      operator const Vector3D() const { return v_; }
 
     private:
         Vector3D v_;

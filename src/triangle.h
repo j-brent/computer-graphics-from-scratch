@@ -33,7 +33,7 @@ namespace cgfs
   struct SuperTriangle3D
   {
     std::array<Position3D, 3> vertices;
-    std::array<UnitVector3D, 3> normals;
+    std::array<Vector3D, 3> normals;
     Color col;
   };
 }

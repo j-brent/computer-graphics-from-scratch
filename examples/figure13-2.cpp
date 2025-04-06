@@ -24,7 +24,7 @@ int main()
   auto canvas = cgfs::Canvas{{640, 640}, cgfs::Palette1::DarkGray};
 
   const auto scene = cgfs::MeshScene{
-    std::vector<cgfs::Instance>{
+    std::vector<cgfs::Instance<cgfs::Mesh>>{
       {cgfs::wireframe_cube(), sp3::transform{{-1.5f, 0.f, 7.f}, {sp3::yhat, sp3::angle{sp3::pi/12}}}},
       {cgfs::wireframe_cube(), sp3::transform{{1.2f, 1.0f, 6.f}, {sp3::yhat, sp3::angle{-sp3::pi/12}}}},
       {monotone_icosahedron(cgfs::Green), sp3::transform{{1.0f, -2.1f, 5.f}, {}, 1.5}}
@@ -43,5 +43,5 @@ int main()
 
   cgfs::render_scene(canvas, scene, camera);
 
-  cgfs::save_as_bmp(canvas, "figure13-9.bmp");
+  cgfs::save_as_bmp(canvas, "figure13-2.bmp");
 }

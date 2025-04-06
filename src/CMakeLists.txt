@@ -4,15 +4,18 @@ add_library(graphics STATIC
     camera.h
     canvas.h
     canvas.cpp
+    cgfs_math.h
     color.h
     draw.h
     extent.h
     index.h
     instance.h
+    interpolation.h
     light.h
-    cgfs_math.h
+    mesh.h
     position.h
     projection.h
+    ray.h
     render.h
     scene.h
     scene.cpp
