@@ -11,9 +11,9 @@
 #include "sp3/axes.h"
 #include "sp3/transform.h"
 
-cgfs::Mesh monotone_icosahedron(const cgfs::Color& color)
+cgfs::MultiNormalMesh monotone_icosahedron(const cgfs::Color& color)
 {
-  auto icosahedron = cgfs::wireframe_icosahedron();
+  auto icosahedron = cgfs::solid_icosahedron();
   for (auto& face : icosahedron.faces)
     face.col = color;
   return icosahedron;
@@ -27,7 +27,7 @@ int main()
     std::vector<cgfs::Instance<cgfs::MultiNormalMesh>>{
       {cgfs::solid_cube(), sp3::transform{{-1.5f, 0.f, 7.f}, {sp3::yhat, sp3::angle{sp3::pi/12}}}},
       {cgfs::solid_cube(), sp3::transform{{1.2f, 1.0f, 6.f}, {sp3::yhat, sp3::angle{-sp3::pi/12}}}},
-      // {monotone_icosahedron(cgfs::Green), sp3::transform{{1.0f, -2.1f, 5.f}, {}, 1.5}}
+      {monotone_icosahedron(cgfs::Green), sp3::transform{{1.0f, -2.1f, 5.f}, {}, 1.5}}
     },
     std::vector<cgfs::Light>{
       cgfs::AmbientLight{0.2f},
